@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject private var authManager = AuthManager.shared
+
     @State private var quests: [Quest] = [
         Quest(
             id: UUID(),
@@ -19,6 +21,7 @@ struct HomeView: View {
 
     @State private var streakCount: Int = 3
     @State private var showAddQuest = false
+    @State private var showLogin = false
 
     var body: some View {
         NavigationStack {
@@ -94,7 +97,12 @@ struct HomeView: View {
                         }
 
                         // Profile Button
-                        Button(action: {}) {
+                        Button(action: {
+                            if !authManager.isAuthenticated {
+                                showLogin = true
+                            }
+                            // TODO: Navigate to profile view when authenticated
+                        }) {
                             Circle()
                                 .fill(
                                     LinearGradient(
@@ -108,7 +116,7 @@ struct HomeView: View {
                                 )
                                 .frame(width: 36, height: 36)
                                 .overlay(
-                                    Image(systemName: "person")
+                                    Image(systemName: authManager.isAuthenticated ? "person.fill" : "person")
                                         .foregroundColor(.white)
                                         .font(.system(size: 16, weight: .medium))
                                 )
@@ -119,6 +127,9 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $showAddQuest) {
             AddQuestView(quests: $quests)
+        }
+        .fullScreenCover(isPresented: $showLogin) {
+            LoginView(authManager: authManager)
         }
     }
 }

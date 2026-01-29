@@ -7,22 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1000001 /* CherriesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001; };
-		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002; };
-		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003; };
-		A1000004 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004; };
-		A1000005 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005; };
-		A1000006 /* Quest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006; };
-		A1000007 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007; };
-		A1000008 /* QuestCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008; };
-		A1000009 /* AddQuestCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009; };
-		A1000010 /* AchievementBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010; };
-		A1000011 /* CherryLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011; };
-		A1000012 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012; };
-		A1000013 /* AddQuestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013; };
+		326FA15F2F2B2CE100179673 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA15E2F2B2CE100179673 /* User.swift */; };
+		326FA1672F2B2DB700179673 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1642F2B2DB700179673 /* AuthManager.swift */; };
+		326FA1682F2B2DB700179673 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1652F2B2DB700179673 /* AuthService.swift */; };
+		326FA16B2F2B2DD600179673 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA16A2F2B2DD600179673 /* SignupView.swift */; };
+		326FA16C2F2B2DD600179673 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1692F2B2DD600179673 /* LoginView.swift */; };
+		A1000001 /* CherriesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* CherriesApp.swift */; };
+		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
+		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003 /* Assets.xcassets */; };
+		A1000004 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004 /* SplashView.swift */; };
+		A1000005 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* HomeView.swift */; };
+		A1000006 /* Quest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006 /* Quest.swift */; };
+		A1000007 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* Achievement.swift */; };
+		A1000008 /* QuestCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000008 /* QuestCard.swift */; };
+		A1000009 /* AddQuestCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009 /* AddQuestCard.swift */; };
+		A1000010 /* AchievementBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010 /* AchievementBadge.swift */; };
+		A1000011 /* CherryLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011 /* CherryLogo.swift */; };
+		A1000012 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012 /* AppColors.swift */; };
+		A1000013 /* AddQuestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013 /* AddQuestView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		326FA15E2F2B2CE100179673 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		326FA1642F2B2DB700179673 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		326FA1652F2B2DB700179673 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		326FA1692F2B2DD600179673 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		326FA16A2F2B2DD600179673 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
 		A2000001 /* CherriesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CherriesApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -50,6 +60,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		326FA1662F2B2DB700179673 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				326FA1642F2B2DB700179673 /* AuthManager.swift */,
+				326FA1652F2B2DB700179673 /* AuthService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		A5000001 = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +82,7 @@
 			children = (
 				A2000001 /* CherriesApp.swift */,
 				A2000002 /* ContentView.swift */,
+				326FA1662F2B2DB700179673 /* Services */,
 				A5000004 /* Views */,
 				A5000005 /* Models */,
 				A5000006 /* Components */,
@@ -82,6 +102,8 @@
 		A5000004 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				326FA1692F2B2DD600179673 /* LoginView.swift */,
+				326FA16A2F2B2DD600179673 /* SignupView.swift */,
 				A2000004 /* SplashView.swift */,
 				A2000005 /* HomeView.swift */,
 				A2000013 /* AddQuestView.swift */,
@@ -92,6 +114,7 @@
 		A5000005 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				326FA15E2F2B2CE100179673 /* User.swift */,
 				A2000006 /* Quest.swift */,
 				A2000007 /* Achievement.swift */,
 			);
@@ -179,6 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				326FA15F2F2B2CE100179673 /* User.swift in Sources */,
 				A1000001 /* CherriesApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
 				A1000004 /* SplashView.swift in Sources */,
@@ -188,8 +212,12 @@
 				A1000008 /* QuestCard.swift in Sources */,
 				A1000009 /* AddQuestCard.swift in Sources */,
 				A1000010 /* AchievementBadge.swift in Sources */,
+				326FA16B2F2B2DD600179673 /* SignupView.swift in Sources */,
+				326FA16C2F2B2DD600179673 /* LoginView.swift in Sources */,
 				A1000011 /* CherryLogo.swift in Sources */,
 				A1000012 /* AppColors.swift in Sources */,
+				326FA1672F2B2DB700179673 /* AuthManager.swift in Sources */,
+				326FA1682F2B2DB700179673 /* AuthService.swift in Sources */,
 				A1000013 /* AddQuestView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
