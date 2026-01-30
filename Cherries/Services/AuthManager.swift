@@ -70,4 +70,11 @@ class AuthManager: ObservableObject {
         }
         clearSession()
     }
+
+    func updateUser(_ updatedUser: User) {
+        self.currentUser = updatedUser
+        if let token = accessToken {
+            saveSession(token: token, user: updatedUser)
+        }
+    }
 }

@@ -7,28 +7,26 @@ struct QuestCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(quest.title)
+                    Text(quest.name)
                         .font(.system(size: 22, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
 
-                    Text(quest.subtitle)
+                    Text(quest.dateRange)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.white.opacity(0.9))
                 }
 
                 Spacer()
 
-                // Toggle/Checkbox
-                Circle()
-                    .fill(.white)
-                    .frame(width: 48, height: 28)
-                    .overlay(
-                        Circle()
-                            .fill(Color.white)
-                            .frame(width: 24, height: 24)
-                            .offset(x: quest.isActive ? 8 : -8),
-                        alignment: quest.isActive ? .trailing : .leading
-                    )
+                // Share code button
+                Button(action: {
+                    // Copy share code to clipboard
+                    UIPasteboard.general.string = quest.shareCode
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.white)
+                        .font(.system(size: 20))
+                }
             }
 
             // Progress Section
@@ -60,19 +58,17 @@ struct QuestCard: View {
                 .frame(height: 12)
             }
 
-            // Action Buttons
-            HStack(spacing: 12) {
-                Button(action: {}) {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(.white)
-                        .frame(height: 40)
-                }
+            // Stats
+            HStack {
+                Text("\(quest.dailyTasks.count) tasks")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
 
-                Button(action: {}) {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(.white)
-                        .frame(height: 40)
-                }
+                Spacer()
+
+                Text("Code: \(quest.shareCode)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
             }
         }
         .padding(20)
@@ -94,9 +90,17 @@ struct QuestCard: View {
 
 #Preview {
     QuestCard(quest: Quest(
-        title: "My first quest",
-        subtitle: "Continue your journey",
-        progress: 0.65
+        id: "1",
+        name: "My first quest",
+        description: "Continue your journey",
+        startDate: Date(),
+        endDate: Date().addingTimeInterval(7 * 24 * 60 * 60),
+        creatorId: "user1",
+        shareCode: "123456789",
+        shareCodeExpiresAt: Date().addingTimeInterval(3 * 24 * 60 * 60),
+        createdAt: Date(),
+        updatedAt: nil,
+        dailyTasks: []
     ))
     .padding()
     .background(Color(hex: "F8F9FA"))

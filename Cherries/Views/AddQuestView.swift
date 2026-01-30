@@ -3,12 +3,28 @@ import SwiftUI
 struct AddQuestView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var quests: [Quest]
+    @StateObject private var authManager = AuthManager.shared
 
     @State private var questName: String = ""
     @State private var startDate: Date = Date()
     @State private var endDate: Date = Date()
     @State private var isStartDateExpanded = false
     @State private var isEndDateExpanded = false
+    @State private var isCreating: Bool = false
+    @State private var errorMessage: String?
+
+    // Daily tasks
+    @State private var dailyTasks: [TaskInput] = []
+    @State private var newTaskTitle: String = ""
+    @State private var newTaskPoints: String = "10"
+    @State private var showTaskInput: Bool = false
+
+    // Helper struct for task input
+    struct TaskInput: Identifiable {
+        let id = UUID()
+        var title: String
+        var points: Int
+    }
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -157,29 +173,163 @@ struct AddQuestView: View {
                             .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
                         }
 
+                        // Daily Tasks Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Daily Tasks")
+                                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.primary)
+
+                                Spacer()
+
+                                Text("\(dailyTasks.count) tasks")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+
+                            // Existing tasks list
+                            if !dailyTasks.isEmpty {
+                                VStack(spacing: 8) {
+                                    ForEach(dailyTasks) { task in
+                                        HStack {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(task.title)
+                                                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                                                    .foregroundColor(.primary)
+
+                                                Text("\(task.points) points")
+                                                    .font(.system(size: 13))
+                                                    .foregroundColor(.secondary)
+                                            }
+
+                                            Spacer()
+
+                                            Button(action: {
+                                                if let index = dailyTasks.firstIndex(where: { $0.id == task.id }) {
+                                                    withAnimation {
+                                                        dailyTasks.remove(at: index)
+                                                    }
+                                                }
+                                            }) {
+                                                Image(systemName: "trash")
+                                                    .font(.system(size: 14))
+                                                    .foregroundColor(.red)
+                                            }
+                                        }
+                                        .padding(12)
+                                        .background(Color.white)
+                                        .cornerRadius(8)
+                                    }
+                                }
+                                .padding(12)
+                                .background(Color(hex: "F8F9FA"))
+                                .cornerRadius(12)
+                            }
+
+                            // Add task input
+                            if showTaskInput {
+                                VStack(spacing: 12) {
+                                    TextField("Task name", text: $newTaskTitle)
+                                        .font(.system(size: 15, design: .rounded))
+                                        .padding(12)
+                                        .background(Color.white)
+                                        .cornerRadius(8)
+
+                                    HStack(spacing: 12) {
+                                        Text("Points:")
+                                            .font(.system(size: 15, weight: .medium))
+                                            .foregroundColor(.secondary)
+
+                                        TextField("10", text: $newTaskPoints)
+                                            .font(.system(size: 15, design: .rounded))
+                                            .keyboardType(.numberPad)
+                                            .padding(12)
+                                            .background(Color.white)
+                                            .cornerRadius(8)
+                                            .frame(width: 80)
+
+                                        Spacer()
+
+                                        Button(action: addTask) {
+                                            Text("Add")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 20)
+                                                .padding(.vertical, 10)
+                                                .background(Color(hex: "00B4D8"))
+                                                .cornerRadius(8)
+                                        }
+                                        .disabled(newTaskTitle.isEmpty)
+                                        .opacity(newTaskTitle.isEmpty ? 0.5 : 1.0)
+                                    }
+                                }
+                                .padding(12)
+                                .background(Color(hex: "E8F4FF"))
+                                .cornerRadius(12)
+                            }
+
+                            // Add task button
+                            Button(action: {
+                                withAnimation {
+                                    showTaskInput.toggle()
+                                    if !showTaskInput {
+                                        newTaskTitle = ""
+                                        newTaskPoints = "10"
+                                    }
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: showTaskInput ? "minus.circle.fill" : "plus.circle.fill")
+                                        .font(.system(size: 16))
+                                    Text(showTaskInput ? "Cancel" : "Add Daily Task")
+                                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                                }
+                                .foregroundColor(Color(hex: "00B4D8"))
+                                .padding(12)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+                            }
+                        }
+
+                        // Error message
+                        if let errorMessage = errorMessage {
+                            Text(errorMessage)
+                                .font(.system(size: 14))
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                        }
+
                         // Create Button
                         Button(action: createQuest) {
-                            Text("Create Quest")
-                                .font(.system(size: 18, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [
-                                            Color(hex: "00D9B5"),
-                                            Color(hex: "00B4D8"),
-                                            Color(hex: "4C8BF5")
-                                        ]),
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
+                            HStack(spacing: 12) {
+                                if isCreating {
+                                    ProgressView()
+                                        .tint(.white)
+                                }
+                                Text(isCreating ? "Creating..." : "Create Quest")
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color(hex: "00D9B5"),
+                                        Color(hex: "00B4D8"),
+                                        Color(hex: "4C8BF5")
+                                    ]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
                                 )
-                                .cornerRadius(16)
-                                .shadow(color: Color(hex: "00B4D8").opacity(0.4), radius: 10, x: 0, y: 4)
+                            )
+                            .cornerRadius(16)
+                            .shadow(color: Color(hex: "00B4D8").opacity(0.4), radius: 10, x: 0, y: 4)
                         }
-                        .disabled(questName.isEmpty)
-                        .opacity(questName.isEmpty ? 0.6 : 1.0)
+                        .disabled(questName.isEmpty || isCreating)
+                        .opacity(questName.isEmpty || isCreating ? 0.6 : 1.0)
 
                         Spacer(minLength: 40)
                     }
@@ -204,22 +354,70 @@ struct AddQuestView: View {
         }
     }
 
-    private func createQuest() {
-        let newQuest = Quest(
-            id: UUID(),
-            title: questName,
-            subtitle: formatDateRange(),
-            progress: 0,
-            isActive: true
-        )
-        quests.append(newQuest)
-        dismiss()
+    private func addTask() {
+        guard !newTaskTitle.isEmpty,
+              let points = Int(newTaskPoints),
+              points > 0 else {
+            return
+        }
+
+        let task = TaskInput(title: newTaskTitle, points: points)
+        withAnimation {
+            dailyTasks.append(task)
+            newTaskTitle = ""
+            newTaskPoints = "10"
+            showTaskInput = false
+        }
     }
 
-    private func formatDateRange() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
+    private func createQuest() {
+        guard let token = authManager.accessToken else {
+            errorMessage = "Not authenticated"
+            return
+        }
+
+        isCreating = true
+        errorMessage = nil
+
+        Task {
+            do {
+                // 格式化日期为ISO 8601字符串
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+
+                // Convert TaskInput to DailyTaskCreate
+                let tasksToCreate: [DailyTaskCreate]? = dailyTasks.isEmpty ? nil : dailyTasks.map { task in
+                    DailyTaskCreate(
+                        title: task.title,
+                        description: nil,
+                        points: task.points
+                    )
+                }
+
+                let questData = QuestCreate(
+                    name: questName,
+                    description: nil,
+                    startDate: dateFormatter.string(from: startDate),
+                    endDate: dateFormatter.string(from: endDate),
+                    dailyTasks: tasksToCreate
+                )
+
+                let newQuest = try await QuestService.shared.createQuest(
+                    token: token,
+                    questData: questData
+                )
+
+                // 添加到本地列表
+                quests.append(newQuest)
+
+                // 关闭视图
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+
+            isCreating = false
+        }
     }
 }
 

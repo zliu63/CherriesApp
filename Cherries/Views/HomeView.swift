@@ -3,15 +3,8 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var authManager = AuthManager.shared
 
-    @State private var quests: [Quest] = [
-        Quest(
-            id: UUID(),
-            title: "My first quest",
-            subtitle: "Continue your journey",
-            progress: 0.65,
-            isActive: true
-        )
-    ]
+    @State private var quests: [Quest] = []
+    @State private var isLoadingQuests: Bool = false
 
     @State private var achievements: [Achievement] = [
         Achievement(id: UUID(), title: "First Quest", icon: "trophy.fill", color: Color(hex: "FFA726")),
@@ -22,6 +15,7 @@ struct HomeView: View {
     @State private var streakCount: Int = 3
     @State private var showAddQuest = false
     @State private var showLogin = false
+    @State private var showProfilePopup = false
 
     var body: some View {
         NavigationStack {
@@ -29,13 +23,18 @@ struct HomeView: View {
                 VStack(spacing: 24) {
                     // Quest Cards Section
                     VStack(spacing: 16) {
-                        ForEach(quests) { quest in
-                            QuestCard(quest: quest)
-                        }
+                        if isLoadingQuests {
+                            ProgressView()
+                                .padding()
+                        } else {
+                            ForEach(quests) { quest in
+                                QuestCard(quest: quest)
+                            }
 
-                        // Add New Quest Card
-                        AddQuestCard {
-                            showAddQuest = true
+                            // Add New Quest Card
+                            AddQuestCard {
+                                showAddQuest = true
+                            }
                         }
                     }
                     .padding(.horizontal, 24)
@@ -98,28 +97,39 @@ struct HomeView: View {
 
                         // Profile Button
                         Button(action: {
-                            if !authManager.isAuthenticated {
+                            if authManager.isAuthenticated {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                    showProfilePopup = true
+                                }
+                            } else {
                                 showLogin = true
                             }
-                            // TODO: Navigate to profile view when authenticated
                         }) {
-                            Circle()
-                                .fill(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [
-                                            Color(hex: "26A69A"),
-                                            Color(hex: "00BFA5")
-                                        ]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
+                            if authManager.isAuthenticated {
+                                AvatarView(
+                                    avatarData: authManager.currentUser?.avatar,
+                                    size: 36,
+                                    showBorder: false
+                                )
+                            } else {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [
+                                                Color(hex: "26A69A"),
+                                                Color(hex: "00BFA5")
+                                            ]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
                                     )
-                                )
-                                .frame(width: 36, height: 36)
-                                .overlay(
-                                    Image(systemName: authManager.isAuthenticated ? "person.fill" : "person")
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 16, weight: .medium))
-                                )
+                                    .frame(width: 36, height: 36)
+                                    .overlay(
+                                        Image(systemName: "person")
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 16, weight: .medium))
+                                    )
+                            }
                         }
                     }
                 }
@@ -130,6 +140,29 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $showLogin) {
             LoginView(authManager: authManager)
+        }
+        .overlay {
+            if showProfilePopup {
+                ProfilePopupView(authManager: authManager, isPresented: $showProfilePopup)
+            }
+        }
+        .onAppear {
+            loadQuests()
+        }
+    }
+
+    private func loadQuests() {
+        guard let token = authManager.accessToken else { return }
+
+        isLoadingQuests = true
+
+        Task {
+            do {
+                quests = try await QuestService.shared.getQuests(token: token)
+            } catch {
+                print("Failed to load quests: \(error)")
+            }
+            isLoadingQuests = false
         }
     }
 }

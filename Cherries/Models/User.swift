@@ -1,9 +1,15 @@
 import Foundation
 
+struct AvatarData: Codable, Equatable {
+    let type: String
+    let value: String
+}
+
 struct User: Codable, Identifiable {
     let id: String
     let email: String
     let username: String?
+    let avatar: AvatarData?
     let createdAt: Date
     let updatedAt: Date?
 
@@ -11,6 +17,7 @@ struct User: Codable, Identifiable {
         case id
         case email
         case username
+        case avatar
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -45,4 +52,9 @@ struct LogoutResponse: Codable {
 
 struct APIError: Codable {
     let detail: String
+}
+
+struct UserUpdate: Codable {
+    let username: String?
+    let avatar: AvatarData?
 }
