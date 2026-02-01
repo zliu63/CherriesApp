@@ -66,9 +66,13 @@ struct QuestCard: View {
 
                 Spacer()
 
-                Text("Code: \(quest.shareCode)")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
+                ParticipantAvatarsView(
+                    participants: quest.participants,
+                    maxVisible: 3,
+                    avatarSize: 24,
+                    overlap: 8,
+                    borderWidth: 2
+                )
             }
         }
         .padding(20)
@@ -100,7 +104,44 @@ struct QuestCard: View {
         shareCodeExpiresAt: Date().addingTimeInterval(3 * 24 * 60 * 60),
         createdAt: Date(),
         updatedAt: nil,
-        dailyTasks: []
+        dailyTasks: [],
+        participants: [
+            Participant(
+                userId: "user1",
+                username: "Creator",
+                avatar: AvatarData(type: "emoji", value: "🐶"),
+                joinedAt: Date(),
+                totalPoints: 100
+            ),
+            Participant(
+                userId: "user2",
+                username: "Friend1",
+                avatar: AvatarData(type: "emoji", value: "🐱"),
+                joinedAt: Date(),
+                totalPoints: 50
+            ),
+            Participant(
+                userId: "user3",
+                username: "Friend2",
+                avatar: AvatarData(type: "emoji", value: "🐼"),
+                joinedAt: Date(),
+                totalPoints: 30
+            ),
+            Participant(
+                userId: "user4",
+                username: "Friend3",
+                avatar: AvatarData(type: "emoji", value: "🐨"),
+                joinedAt: Date(),
+                totalPoints: 20
+            ),
+            Participant(
+                userId: "user5",
+                username: "Friend4",
+                avatar: AvatarData(type: "emoji", value: "🦊"),
+                joinedAt: Date(),
+                totalPoints: 10
+            )
+        ]
     ))
     .padding()
     .background(Color(hex: "F8F9FA"))

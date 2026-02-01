@@ -1,6 +1,25 @@
 import Foundation
 
-// 后端返回的完整Quest
+// Participant Information
+struct Participant: Codable, Identifiable {
+    let userId: String
+    let username: String?
+    let avatar: AvatarData?
+    let joinedAt: Date
+    let totalPoints: Int
+
+    var id: String { userId }
+
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+        case username
+        case avatar
+        case joinedAt = "joined_at"
+        case totalPoints = "total_points"
+    }
+}
+
+
 struct Quest: Codable, Identifiable {
     let id: String
     let name: String
@@ -13,6 +32,7 @@ struct Quest: Codable, Identifiable {
     let createdAt: Date
     let updatedAt: Date?
     let dailyTasks: [DailyTask]
+    let participants: [Participant]
 
     enum CodingKeys: String, CodingKey {
         case id, name, description
@@ -24,9 +44,9 @@ struct Quest: Codable, Identifiable {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case dailyTasks = "daily_tasks"
+        case participants
     }
 
-    // 计算属性用于UI显示
     var dateRange: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
@@ -58,7 +78,7 @@ struct DailyTask: Codable, Identifiable {
     }
 }
 
-// 创建Quest的请求体
+// Create Quest Request
 struct QuestCreate: Codable {
     let name: String
     let description: String?
@@ -80,7 +100,7 @@ struct DailyTaskCreate: Codable {
     let points: Int
 }
 
-// 加入Quest的请求体
+// Join Quest Request
 struct QuestJoinRequest: Codable {
     let shareCode: String
 
