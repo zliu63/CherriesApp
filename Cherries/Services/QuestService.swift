@@ -65,7 +65,7 @@ class QuestService {
 
     private init() {}
 
-    // 创建Quest
+    // Create a new Quest
     func createQuest(token: String, questData: QuestCreate) async throws -> Quest {
         let url = URL(string: "\(baseURL)/quests")!
 
@@ -102,7 +102,7 @@ class QuestService {
         }
     }
 
-    // 获取所有Quests
+    // Get all Quests for the current user
     func getQuests(token: String) async throws -> [Quest] {
         let url = URL(string: "\(baseURL)/quests")!
 
@@ -133,7 +133,7 @@ class QuestService {
         }
     }
 
-    // 通过分享码加入Quest
+    // Join a Quest using share code
     func joinQuest(token: String, shareCode: String) async throws -> Quest {
         let url = URL(string: "\(baseURL)/quests/join")!
 

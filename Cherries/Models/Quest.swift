@@ -54,7 +54,7 @@ struct Quest: Codable, Identifiable {
     }
 
     var progress: Double {
-        // TODO: 根据daily tasks计算进度
+        // TODO: Calculate progress based on daily tasks
         return 0.0
     }
 

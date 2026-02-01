@@ -381,7 +381,7 @@ struct AddQuestView: View {
 
         Task {
             do {
-                // 格式化日期为ISO 8601字符串
+                // Format dates as ISO 8601 strings
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd"
 
@@ -407,10 +407,10 @@ struct AddQuestView: View {
                     questData: questData
                 )
 
-                // 添加到本地列表
+                // Add to local list
                 quests.append(newQuest)
 
-                // 关闭视图
+                // Dismiss view
                 dismiss()
             } catch {
                 errorMessage = error.localizedDescription
