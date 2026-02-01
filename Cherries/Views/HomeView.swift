@@ -38,7 +38,11 @@ struct HomeView: View {
 
                         // Add New Quest Card
                         AddQuestCard {
-                            showAddQuest = true
+                            if authManager.isAuthenticated {
+                                showAddQuest = true
+                            } else {
+                                showLogin = true
+                            }
                         }
                     }
                     .padding(.horizontal, 24)
