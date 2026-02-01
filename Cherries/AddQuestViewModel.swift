@@ -9,6 +9,8 @@ final class AddQuestViewModel: ObservableObject {
     @Published var dailyTasks: [TaskInput] = []
     @Published var isCreating: Bool = false
     @Published var errorMessage: String?
+    @Published var joinCode: String = ""
+    @Published var isJoining: Bool = false
 
     struct TaskInput: Identifiable {
         let id = UUID()
@@ -68,5 +70,21 @@ final class AddQuestViewModel: ObservableObject {
         )
 
         return newQuest
+    }
+
+    func joinQuest() async throws -> Quest {
+        guard let token = authManager.accessToken else {
+            throw AuthError.unauthorized
+        }
+        // Basic validation: 9-digit numeric code
+        let digitsOnly = joinCode.filter { $0.isNumber }
+        guard digitsOnly.count == 9 else {
+            throw QuestError.serverError("Invalid sharing code. Please enter the 9-digit code.")
+        }
+        isJoining = true
+        errorMessage = nil
+        defer { isJoining = false }
+        let quest = try await QuestService.shared.joinQuest(token: token, shareCode: digitsOnly)
+        return quest
     }
 }
