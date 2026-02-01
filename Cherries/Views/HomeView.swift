@@ -5,9 +5,6 @@ struct HomeView: View {
     @StateObject private var authManager = AuthManager.shared
     @StateObject private var viewModel = HomeViewModel()
 
-    // Quests now managed by HomeViewModel
-    @State private var isLoadingQuests: Bool = false
-
     @State private var achievements: [Achievement] = [
         Achievement(id: UUID(), title: "First Quest", icon: "trophy.fill", color: Color(hex: "FFA726")),
         Achievement(id: UUID(), title: "3 Day Streak", icon: "star.fill", color: Color(hex: "7E57C2")),
@@ -29,18 +26,19 @@ struct HomeView: View {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                         }
-                        if isLoadingQuests {
-                            ProgressView()
-                                .padding()
-                        } else {
-                            ForEach(viewModel.quests) { quest in
-                                QuestCard(quest: quest)
-                            }
+                        ForEach(viewModel.quests) { quest in
+                            DeletableQuestCard(
+                                quest: quest,
+                                canDelete: authManager.currentUser?.id == quest.creatorId,
+                                onDelete: {
+                                    Task { await deleteQuest(quest) }
+                                }
+                            )
+                        }
 
-                            // Add New Quest Card
-                            AddQuestCard {
-                                showAddQuest = true
-                            }
+                        // Add New Quest Card
+                        AddQuestCard {
+                            showAddQuest = true
                         }
                     }
                     .padding(.horizontal, 24)
@@ -152,14 +150,14 @@ struct HomeView: View {
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
             if isAuthenticated {
-                Task { await viewModel.fetchQuests() }
+                Task { await viewModel.fetchQuests(force: true) }
             } else {
                 viewModel.clearOnLogout()
             }
         }
         .task {
             if authManager.isAuthenticated {
-                await viewModel.fetchQuests()
+                await viewModel.fetchQuests(force: true)
             }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -175,23 +173,20 @@ struct HomeView: View {
                 ProfilePopupView(authManager: authManager, isPresented: $showProfilePopup)
             }
         }
-        .onAppear {
-            loadQuests()
-        }
     }
 
-    private func loadQuests() {
+    private func deleteQuest(_ quest: Quest) async {
         guard let token = authManager.accessToken else { return }
-
-        isLoadingQuests = true
-
-        Task {
-            do {
-                viewModel.quests = try await QuestService.shared.getQuests(token: token)
-            } catch {
-                print("Failed to load quests: \(error)")
+        do {
+            try await QuestService.shared.deleteQuest(token: token, questId: quest.id)
+            if let idx = viewModel.quests.firstIndex(where: { $0.id == quest.id }) {
+                await MainActor.run { viewModel.quests.remove(at: idx) }
             }
-            isLoadingQuests = false
+            NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
+        } catch let error as QuestError {
+            print("[HomeView] Failed to delete quest: \(error.localizedDescription)")
+        } catch {
+            print("[HomeView] Failed to delete quest: \(error)")
         }
     }
 }

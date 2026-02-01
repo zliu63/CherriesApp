@@ -22,6 +22,7 @@
 		326FA17C2F2FF64900179673 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17B2F2FF64900179673 /* ProfileViewModel.swift */; };
 		326FA17E2F2FF81D00179673 /* AddQuestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17D2F2FF81D00179673 /* AddQuestViewModel.swift */; };
 		326FA1802F2FF8CF00179673 /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17F2F2FF8CF00179673 /* NotificationNames.swift */; };
+		326FA1822F2FFACD00179673 /* SwipeToDeleteModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1812F2FFACD00179673 /* SwipeToDeleteModifier.swift */; };
 		A1000001 /* CherriesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* CherriesApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003 /* Assets.xcassets */; };
@@ -53,6 +54,7 @@
 		326FA17B2F2FF64900179673 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		326FA17D2F2FF81D00179673 /* AddQuestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddQuestViewModel.swift; sourceTree = "<group>"; };
 		326FA17F2F2FF8CF00179673 /* NotificationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationNames.swift; sourceTree = "<group>"; };
+		326FA1812F2FFACD00179673 /* SwipeToDeleteModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDeleteModifier.swift; sourceTree = "<group>"; };
 		A2000001 /* CherriesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CherriesApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				A2000004 /* SplashView.swift */,
 				A2000005 /* HomeView.swift */,
 				A2000013 /* AddQuestView.swift */,
+				326FA1812F2FFACD00179673 /* SwipeToDeleteModifier.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -243,6 +246,7 @@
 				326FA1762F2FEC0700179673 /* ParticipantAvatarsView.swift in Sources */,
 				A1000007 /* Achievement.swift in Sources */,
 				A1000008 /* QuestCard.swift in Sources */,
+				326FA1822F2FFACD00179673 /* SwipeToDeleteModifier.swift in Sources */,
 				A1000009 /* AddQuestCard.swift in Sources */,
 				A1000010 /* AchievementBadge.swift in Sources */,
 				326FA1802F2FF8CF00179673 /* NotificationNames.swift in Sources */,

@@ -166,4 +166,27 @@ class QuestService {
             throw QuestError.networkError(error)
         }
     }
+
+    // Delete a Quest
+    func deleteQuest(token: String, questId: String) async throws {
+        let url = URL(string: "\(baseURL)/quests/\(questId)")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw QuestError.unknown
+        }
+
+        if httpResponse.statusCode == 204 || httpResponse.statusCode == 200 {
+            return
+        } else if httpResponse.statusCode == 401 {
+            throw QuestError.unauthorized
+        } else {
+            throw QuestError.serverError("Server error: \(httpResponse.statusCode)")
+        }
+    }
 }
