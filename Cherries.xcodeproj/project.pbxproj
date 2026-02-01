@@ -18,11 +18,11 @@
 		326FA1742F2C403700179673 /* QuestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1732F2C403700179673 /* QuestService.swift */; };
 		326FA1762F2FEC0700179673 /* ParticipantAvatarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1752F2FEC0700179673 /* ParticipantAvatarsView.swift */; };
 		326FA1782F2FEFB300179673 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1772F2FEFB300179673 /* Constants.swift */; };
-		326FA17A2F2FF63300179673 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1792F2FF63300179673 /* HomeViewModel.swift */; };
-		326FA17C2F2FF64900179673 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17B2F2FF64900179673 /* ProfileViewModel.swift */; };
-		326FA17E2F2FF81D00179673 /* AddQuestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17D2F2FF81D00179673 /* AddQuestViewModel.swift */; };
 		326FA1802F2FF8CF00179673 /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA17F2F2FF8CF00179673 /* NotificationNames.swift */; };
 		326FA1822F2FFACD00179673 /* SwipeToDeleteModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1812F2FFACD00179673 /* SwipeToDeleteModifier.swift */; };
+		326FA1872F300E3000179673 /* AddQuestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1842F300E3000179673 /* AddQuestViewModel.swift */; };
+		326FA1882F300E3000179673 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1852F300E3000179673 /* HomeViewModel.swift */; };
+		326FA1892F300E3000179673 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1862F300E3000179673 /* ProfileViewModel.swift */; };
 		A1000001 /* CherriesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* CherriesApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003 /* Assets.xcassets */; };
@@ -50,11 +50,11 @@
 		326FA1732F2C403700179673 /* QuestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestService.swift; sourceTree = "<group>"; };
 		326FA1752F2FEC0700179673 /* ParticipantAvatarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantAvatarsView.swift; sourceTree = "<group>"; };
 		326FA1772F2FEFB300179673 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		326FA1792F2FF63300179673 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
-		326FA17B2F2FF64900179673 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
-		326FA17D2F2FF81D00179673 /* AddQuestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddQuestViewModel.swift; sourceTree = "<group>"; };
 		326FA17F2F2FF8CF00179673 /* NotificationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationNames.swift; sourceTree = "<group>"; };
 		326FA1812F2FFACD00179673 /* SwipeToDeleteModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDeleteModifier.swift; sourceTree = "<group>"; };
+		326FA1842F300E3000179673 /* AddQuestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddQuestViewModel.swift; sourceTree = "<group>"; };
+		326FA1852F300E3000179673 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		326FA1862F300E3000179673 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		A2000001 /* CherriesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CherriesApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -93,6 +93,16 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		326FA1832F300DAB00179673 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				326FA1842F300E3000179673 /* AddQuestViewModel.swift */,
+				326FA1852F300E3000179673 /* HomeViewModel.swift */,
+				326FA1862F300E3000179673 /* ProfileViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		A5000001 = {
 			isa = PBXGroup;
 			children = (
@@ -109,12 +119,10 @@
 				A2000002 /* ContentView.swift */,
 				326FA1662F2B2DB700179673 /* Services */,
 				A5000004 /* Views */,
+				326FA1832F300DAB00179673 /* ViewModels */,
 				A5000005 /* Models */,
 				A5000006 /* Components */,
 				A2000003 /* Assets.xcassets */,
-				326FA1792F2FF63300179673 /* HomeViewModel.swift */,
-				326FA17B2F2FF64900179673 /* ProfileViewModel.swift */,
-				326FA17D2F2FF81D00179673 /* AddQuestViewModel.swift */,
 				326FA17F2F2FF8CF00179673 /* NotificationNames.swift */,
 			);
 			path = Cherries;
@@ -239,6 +247,9 @@
 				326FA15F2F2B2CE100179673 /* User.swift in Sources */,
 				A1000001 /* CherriesApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
+				326FA1872F300E3000179673 /* AddQuestViewModel.swift in Sources */,
+				326FA1882F300E3000179673 /* HomeViewModel.swift in Sources */,
+				326FA1892F300E3000179673 /* ProfileViewModel.swift in Sources */,
 				A1000004 /* SplashView.swift in Sources */,
 				A1000005 /* HomeView.swift in Sources */,
 				326FA1782F2FEFB300179673 /* Constants.swift in Sources */,
@@ -250,15 +261,12 @@
 				A1000009 /* AddQuestCard.swift in Sources */,
 				A1000010 /* AchievementBadge.swift in Sources */,
 				326FA1802F2FF8CF00179673 /* NotificationNames.swift in Sources */,
-				326FA17E2F2FF81D00179673 /* AddQuestViewModel.swift in Sources */,
 				326FA16B2F2B2DD600179673 /* SignupView.swift in Sources */,
-				326FA17C2F2FF64900179673 /* ProfileViewModel.swift in Sources */,
 				326FA16C2F2B2DD600179673 /* LoginView.swift in Sources */,
 				A1000011 /* CherryLogo.swift in Sources */,
 				326FA1722F2C3A6100179673 /* AvatarView.swift in Sources */,
 				326FA16E2F2C2EB900179673 /* ProfilePopupView.swift in Sources */,
 				326FA1702F2C3A4100179673 /* ProfileService.swift in Sources */,
-				326FA17A2F2FF63300179673 /* HomeViewModel.swift in Sources */,
 				A1000012 /* AppColors.swift in Sources */,
 				326FA1672F2B2DB700179673 /* AuthManager.swift in Sources */,
 				326FA1682F2B2DB700179673 /* AuthService.swift in Sources */,
