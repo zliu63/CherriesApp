@@ -11,8 +11,9 @@ struct DeletableQuestCard: View {
 
     var body: some View {
         ZStack {
-            // Background delete action (leading side for right swipe)
+            // Trailing delete button without colored background
             HStack(spacing: 0) {
+                Spacer(minLength: 0)
                 if canDelete {
                     Button(role: .destructive) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -29,10 +30,9 @@ struct DeletableQuestCard: View {
                 } else {
                     Color.clear.frame(width: 0)
                 }
-                Spacer(minLength: 0)
             }
 
-            // Foreground card
+            // Foreground card with left-swipe gesture
             QuestCard(quest: quest)
                 .offset(x: offsetX)
                 .gesture(
@@ -40,17 +40,17 @@ struct DeletableQuestCard: View {
                         .onChanged { value in
                             guard canDelete else { return }
                             let translation = value.translation.width
-                            if translation > 0 { // right swipe to reveal
-                                offsetX = min(maxReveal, translation)
-                            } else { // left swipe to close
-                                offsetX = max(0, offsetX + translation)
+                            if translation < 0 { // left swipe to reveal
+                                offsetX = max(-maxReveal, translation)
+                            } else { // right swipe to close
+                                offsetX = min(0, offsetX + translation)
                             }
                         }
-                        .onEnded { value in
+                        .onEnded { _ in
                             guard canDelete else { return }
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                if offsetX > revealWidth * 0.6 {
-                                    offsetX = revealWidth
+                                if abs(offsetX) > revealWidth * 0.6 {
+                                    offsetX = -revealWidth
                                 } else {
                                     offsetX = 0
                                 }
