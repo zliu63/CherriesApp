@@ -2,8 +2,58 @@ import SwiftUI
 
 struct QuestCard: View {
     let quest: Quest
+    var onDelete: (() -> Void)? = nil
+
+    @State private var offsetX: CGFloat = 0
+    private let revealWidth: CGFloat = 88
+    private let maxReveal: CGFloat = 100
 
     var body: some View {
+        ZStack(alignment: .trailing) {
+            if let onDelete {
+                Button(role: .destructive) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { offsetX = 0 }
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .font(.system(size: 16, weight: .semibold))
+                        .frame(width: revealWidth)
+                        .frame(maxHeight: .infinity)
+                }
+                .tint(.red)
+                .zIndex(0)
+            }
+
+            cardContent
+                .contentShape(Rectangle())
+                .offset(x: offsetX)
+                .zIndex(1)
+                .highPriorityGesture(
+                    DragGesture(minimumDistance: 8, coordinateSpace: .local)
+                        .onChanged { value in
+                            let translation = value.translation.width
+                            if translation < 0 { // left swipe to reveal
+                                offsetX = max(-maxReveal, translation)
+                            } else { // right swipe to close
+                                offsetX = min(0, offsetX + translation)
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                if abs(offsetX) > revealWidth * 0.6 {
+                                    offsetX = -revealWidth
+                                } else {
+                                    offsetX = 0
+                                }
+                            }
+                        }
+                )
+                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: offsetX)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -20,7 +70,6 @@ struct QuestCard: View {
 
                 // Share code button
                 Button(action: {
-                    // Copy share code to clipboard
                     UIPasteboard.general.string = quest.shareCode
                 }) {
                     Image(systemName: "square.and.arrow.up")

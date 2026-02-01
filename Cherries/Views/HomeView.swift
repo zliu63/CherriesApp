@@ -27,9 +27,8 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         ForEach(viewModel.quests) { quest in
-                            DeletableQuestCard(
+                            QuestCard(
                                 quest: quest,
-                                canDelete: authManager.currentUser?.id == quest.creatorId,
                                 onDelete: {
                                     Task { await deleteQuest(quest) }
                                 }
