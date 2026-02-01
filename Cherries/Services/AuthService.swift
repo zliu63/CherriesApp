@@ -121,4 +121,42 @@ class AuthService {
             throw AuthError.unknown
         }
     }
+
+    func refreshToken(refreshToken: String) async throws -> AuthResponse {
+        let url = URL(string: "\(baseURL)/auth/refresh")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let refreshRequest = RefreshTokenRequest(refreshToken: refreshToken)
+        request.httpBody = try JSONEncoder().encode(refreshRequest)
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw AuthError.unknown
+            }
+
+            if httpResponse.statusCode == 200 {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                return try decoder.decode(AuthResponse.self, from: data)
+            } else if httpResponse.statusCode == 401 {
+                throw AuthError.unauthorized
+            } else {
+                if let apiError = try? JSONDecoder().decode(APIError.self, from: data) {
+                    throw AuthError.serverError(apiError.detail)
+                }
+                throw AuthError.serverError("Server error: \(httpResponse.statusCode)")
+            }
+        } catch let error as AuthError {
+            throw error
+        } catch let error as DecodingError {
+            throw AuthError.decodingError(error)
+        } catch {
+            throw AuthError.networkError(error)
+        }
+    }
 }

@@ -10,7 +10,12 @@ class AuthManager: ObservableObject {
     @Published var isLoading: Bool = false
 
     private let tokenKey = "cherries_access_token"
+    private let refreshTokenKey = "cherries_refresh_token"
+    private let tokenTimestampKey = "cherries_token_timestamp"
     private let userKey = "cherries_user"
+
+    /// Token refresh threshold in seconds (15 minutes)
+    private let tokenRefreshThreshold: TimeInterval = 15 * 60
 
     private init() {
         loadStoredSession()
@@ -18,6 +23,20 @@ class AuthManager: ObservableObject {
 
     var accessToken: String? {
         UserDefaults.standard.string(forKey: tokenKey)
+    }
+
+    var refreshToken: String? {
+        UserDefaults.standard.string(forKey: refreshTokenKey)
+    }
+
+    var tokenTimestamp: Date? {
+        UserDefaults.standard.object(forKey: tokenTimestampKey) as? Date
+    }
+
+    /// Check if token needs refresh (older than 15 minutes)
+    var shouldRefreshToken: Bool {
+        guard let timestamp = tokenTimestamp else { return true }
+        return Date().timeIntervalSince(timestamp) > tokenRefreshThreshold
     }
 
     private func loadStoredSession() {
@@ -29,8 +48,10 @@ class AuthManager: ObservableObject {
         }
     }
 
-    private func saveSession(token: String, user: User) {
+    private func saveSession(token: String, refreshToken: String, user: User) {
         UserDefaults.standard.set(token, forKey: tokenKey)
+        UserDefaults.standard.set(refreshToken, forKey: refreshTokenKey)
+        UserDefaults.standard.set(Date(), forKey: tokenTimestampKey)
         if let userData = try? JSONEncoder().encode(user) {
             UserDefaults.standard.set(userData, forKey: userKey)
         }
@@ -40,6 +61,8 @@ class AuthManager: ObservableObject {
 
     private func clearSession() {
         UserDefaults.standard.removeObject(forKey: tokenKey)
+        UserDefaults.standard.removeObject(forKey: refreshTokenKey)
+        UserDefaults.standard.removeObject(forKey: tokenTimestampKey)
         UserDefaults.standard.removeObject(forKey: userKey)
         self.currentUser = nil
         self.isAuthenticated = false
@@ -50,7 +73,7 @@ class AuthManager: ObservableObject {
         defer { isLoading = false }
 
         let response = try await AuthService.shared.login(email: email, password: password)
-        saveSession(token: response.accessToken, user: response.user)
+        saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
     }
 
     func signup(email: String, username: String, password: String) async throws {
@@ -58,7 +81,7 @@ class AuthManager: ObservableObject {
         defer { isLoading = false }
 
         let response = try await AuthService.shared.signup(email: email, username: username, password: password)
-        saveSession(token: response.accessToken, user: response.user)
+        saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
     }
 
     func logout() async {
@@ -71,10 +94,31 @@ class AuthManager: ObservableObject {
         clearSession()
     }
 
+    /// Refresh access token if needed (token older than 15 minutes)
+    func refreshTokenIfNeeded() async {
+        guard isAuthenticated,
+              shouldRefreshToken,
+              let currentRefreshToken = refreshToken else {
+            return
+        }
+
+        do {
+            let response = try await AuthService.shared.refreshToken(refreshToken: currentRefreshToken)
+            saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
+            print("[AuthManager] Token refreshed successfully")
+        } catch {
+            print("[AuthManager] Failed to refresh token: \(error.localizedDescription)")
+            // If refresh fails (e.g., refresh token expired), log the user out
+            if case AuthError.unauthorized = error {
+                await logout()
+            }
+        }
+    }
+
     func updateUser(_ updatedUser: User) {
         self.currentUser = updatedUser
-        if let token = accessToken {
-            saveSession(token: token, user: updatedUser)
+        if let token = accessToken, let refresh = refreshToken {
+            saveSession(token: token, refreshToken: refresh, user: updatedUser)
         }
     }
 }

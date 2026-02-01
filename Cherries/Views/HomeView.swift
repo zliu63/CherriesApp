@@ -165,7 +165,10 @@ struct HomeView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active && authManager.isAuthenticated {
-                Task { await viewModel.fetchQuests() }
+                Task {
+                    await authManager.refreshTokenIfNeeded()
+                    await viewModel.fetchQuests()
+                }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .questsShouldRefresh)) { _ in
