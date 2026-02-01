@@ -31,6 +31,38 @@ class QuestService {
 
     private let baseURL = "http://localhost:8000/api/v1"
 
+    private lazy var decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+
+            let iso8601Formatter = ISO8601DateFormatter()
+            iso8601Formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = iso8601Formatter.date(from: dateString) {
+                return date
+            }
+
+            iso8601Formatter.formatOptions = [.withInternetDateTime]
+            if let date = iso8601Formatter.date(from: dateString) {
+                return date
+            }
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            dateFormatter.timeZone = TimeZone(identifier: "UTC")
+            if let date = dateFormatter.date(from: dateString) {
+                return date
+            }
+
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Cannot decode date: \(dateString)"
+            )
+        }
+        return decoder
+    }()
+
     private init() {}
 
     // 创建Quest
@@ -52,9 +84,7 @@ class QuestService {
             }
 
             if httpResponse.statusCode == 201 {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                return try decoder.decode(Quest.self, from: data)
+                return try self.decoder.decode(Quest.self, from: data)
             } else if httpResponse.statusCode == 401 {
                 throw QuestError.unauthorized
             } else {
@@ -88,9 +118,7 @@ class QuestService {
             }
 
             if httpResponse.statusCode == 200 {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                return try decoder.decode([Quest].self, from: data)
+                return try self.decoder.decode([Quest].self, from: data)
             } else if httpResponse.statusCode == 401 {
                 throw QuestError.unauthorized
             } else {
@@ -125,9 +153,7 @@ class QuestService {
             }
 
             if httpResponse.statusCode == 201 {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                return try decoder.decode(Quest.self, from: data)
+                return try self.decoder.decode(Quest.self, from: data)
             } else {
                 if let apiError = try? JSONDecoder().decode(APIError.self, from: data) {
                     throw QuestError.serverError(apiError.detail)
