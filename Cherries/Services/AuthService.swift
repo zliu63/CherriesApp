@@ -29,8 +29,7 @@ enum AuthError: Error, LocalizedError {
 class AuthService {
     static let shared = AuthService()
 
-    // TODO: Update this to your actual backend URL
-    private let baseURL = "http://localhost:8000/api/v1"
+    private let baseURL = Constants.API.baseURL
 
     private init() {}
 

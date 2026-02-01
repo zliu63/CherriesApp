@@ -29,7 +29,7 @@ enum QuestError: Error, LocalizedError {
 class QuestService {
     static let shared = QuestService()
 
-    private let baseURL = "http://localhost:8000/api/v1"
+    private let baseURL = Constants.API.baseURL
 
     private lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()

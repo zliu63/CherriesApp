@@ -29,8 +29,7 @@ enum ProfileError: Error, LocalizedError {
 class ProfileService {
     static let shared = ProfileService()
 
-    // TODO: Update this to your actual backend URL
-    private let baseURL = "http://localhost:8000/api/v1"
+    private let baseURL = Constants.API.baseURL
 
     private init() {}
 
