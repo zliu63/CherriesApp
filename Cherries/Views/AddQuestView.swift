@@ -4,20 +4,13 @@ struct AddQuestView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var quests: [Quest]
     @StateObject private var authManager = AuthManager.shared
+    @StateObject private var viewModel = AddQuestViewModel()
 
-    @State private var questName: String = ""
-    @State private var startDate: Date = Date()
-    @State private var endDate: Date = Date()
     @State private var isStartDateExpanded = false
     @State private var isEndDateExpanded = false
-    @State private var isCreating: Bool = false
-    @State private var errorMessage: String?
-
-    // Daily tasks
-    @State private var dailyTasks: [TaskInput] = []
+    @State private var showTaskInput = false
     @State private var newTaskTitle: String = ""
     @State private var newTaskPoints: String = "10"
-    @State private var showTaskInput: Bool = false
 
     // Helper struct for task input
     struct TaskInput: Identifiable {
@@ -55,7 +48,7 @@ struct AddQuestView: View {
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundColor(.primary)
 
-                            TextField("Enter quest name", text: $questName)
+                            TextField("Enter quest name", text: $viewModel.questName)
                                 .font(.system(size: 17, design: .rounded))
                                 .padding(16)
                                 .background(Color.white)
@@ -80,7 +73,7 @@ struct AddQuestView: View {
                                     }
                                 }) {
                                     HStack {
-                                        Text(dateFormatter.string(from: startDate))
+                                        Text(dateFormatter.string(from: viewModel.startDate))
                                             .font(.system(size: 17, design: .rounded))
                                             .foregroundColor(.primary)
                                         Spacer()
@@ -99,7 +92,7 @@ struct AddQuestView: View {
                                 if isStartDateExpanded {
                                     DatePicker(
                                         "",
-                                        selection: $startDate,
+                                        selection: $viewModel.startDate,
                                         displayedComponents: .date
                                     )
                                     .datePickerStyle(.wheel)
@@ -108,9 +101,9 @@ struct AddQuestView: View {
                                     .padding(.horizontal, 8)
                                     .padding(.bottom, 12)
                                     .background(Color.white)
-                                    .onChange(of: startDate) { _, newValue in
-                                        if endDate < newValue {
-                                            endDate = newValue
+                                    .onChange(of: viewModel.startDate) { _, newValue in
+                                        if viewModel.endDate < newValue {
+                                            viewModel.endDate = newValue
                                         }
                                     }
                                 }
@@ -137,7 +130,7 @@ struct AddQuestView: View {
                                     }
                                 }) {
                                     HStack {
-                                        Text(dateFormatter.string(from: endDate))
+                                        Text(dateFormatter.string(from: viewModel.endDate))
                                             .font(.system(size: 17, design: .rounded))
                                             .foregroundColor(.primary)
                                         Spacer()
@@ -156,8 +149,8 @@ struct AddQuestView: View {
                                 if isEndDateExpanded {
                                     DatePicker(
                                         "",
-                                        selection: $endDate,
-                                        in: startDate...,
+                                        selection: $viewModel.endDate,
+                                        in: viewModel.startDate...,
                                         displayedComponents: .date
                                     )
                                     .datePickerStyle(.wheel)
@@ -182,15 +175,15 @@ struct AddQuestView: View {
 
                                 Spacer()
 
-                                Text("\(dailyTasks.count) tasks")
+                                Text("\(viewModel.dailyTasks.count) tasks")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.secondary)
                             }
 
                             // Existing tasks list
-                            if !dailyTasks.isEmpty {
+                            if !viewModel.dailyTasks.isEmpty {
                                 VStack(spacing: 8) {
-                                    ForEach(dailyTasks) { task in
+                                    ForEach(viewModel.dailyTasks) { task in
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text(task.title)
@@ -205,11 +198,7 @@ struct AddQuestView: View {
                                             Spacer()
 
                                             Button(action: {
-                                                if let index = dailyTasks.firstIndex(where: { $0.id == task.id }) {
-                                                    withAnimation {
-                                                        dailyTasks.remove(at: index)
-                                                    }
-                                                }
+                                                viewModel.removeTask(id: task.id)
                                             }) {
                                                 Image(systemName: "trash")
                                                     .font(.system(size: 14))
@@ -294,7 +283,7 @@ struct AddQuestView: View {
                         }
 
                         // Error message
-                        if let errorMessage = errorMessage {
+                        if let errorMessage = viewModel.errorMessage {
                             Text(errorMessage)
                                 .font(.system(size: 14))
                                 .foregroundColor(.red)
@@ -304,11 +293,11 @@ struct AddQuestView: View {
                         // Create Button
                         Button(action: createQuest) {
                             HStack(spacing: 12) {
-                                if isCreating {
+                                if viewModel.isCreating {
                                     ProgressView()
                                         .tint(.white)
                                 }
-                                Text(isCreating ? "Creating..." : "Create Quest")
+                                Text(viewModel.isCreating ? "Creating..." : "Create Quest")
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                             }
                             .foregroundColor(.white)
@@ -328,8 +317,8 @@ struct AddQuestView: View {
                             .cornerRadius(16)
                             .shadow(color: Color(hex: "00B4D8").opacity(0.4), radius: 10, x: 0, y: 4)
                         }
-                        .disabled(questName.isEmpty || isCreating)
-                        .opacity(questName.isEmpty || isCreating ? 0.6 : 1.0)
+                        .disabled(viewModel.questName.isEmpty || viewModel.isCreating)
+                        .opacity(viewModel.questName.isEmpty || viewModel.isCreating ? 0.6 : 1.0)
 
                         Spacer(minLength: 40)
                     }
@@ -355,15 +344,9 @@ struct AddQuestView: View {
     }
 
     private func addTask() {
-        guard !newTaskTitle.isEmpty,
-              let points = Int(newTaskPoints),
-              points > 0 else {
-            return
-        }
-
-        let task = TaskInput(title: newTaskTitle, points: points)
+        guard !newTaskTitle.isEmpty else { return }
+        viewModel.addTask(title: newTaskTitle, pointsString: newTaskPoints)
         withAnimation {
-            dailyTasks.append(task)
             newTaskTitle = ""
             newTaskPoints = "10"
             showTaskInput = false
@@ -371,52 +354,17 @@ struct AddQuestView: View {
     }
 
     private func createQuest() {
-        guard let token = authManager.accessToken else {
-            errorMessage = "Not authenticated"
-            return
-        }
-
-        isCreating = true
-        errorMessage = nil
-
         Task {
             do {
-                // Format dates as ISO 8601 strings
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd"
-
-                // Convert TaskInput to DailyTaskCreate
-                let tasksToCreate: [DailyTaskCreate]? = dailyTasks.isEmpty ? nil : dailyTasks.map { task in
-                    DailyTaskCreate(
-                        title: task.title,
-                        description: nil,
-                        points: task.points
-                    )
-                }
-
-                let questData = QuestCreate(
-                    name: questName,
-                    description: nil,
-                    startDate: dateFormatter.string(from: startDate),
-                    endDate: dateFormatter.string(from: endDate),
-                    dailyTasks: tasksToCreate
-                )
-
-                let newQuest = try await QuestService.shared.createQuest(
-                    token: token,
-                    questData: questData
-                )
-
-                // Add to local list
+                let newQuest = try await viewModel.createQuest()
                 quests.append(newQuest)
-
-                // Dismiss view
+                NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
                 dismiss()
+            } catch let error as AuthError {
+                viewModel.errorMessage = error.localizedDescription
             } catch {
-                errorMessage = error.localizedDescription
+                viewModel.errorMessage = error.localizedDescription
             }
-
-            isCreating = false
         }
     }
 }

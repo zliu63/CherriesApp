@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfilePopupView: View {
     @ObservedObject var authManager: AuthManager
     @Binding var isPresented: Bool
+    @StateObject private var viewModel = ProfileViewModel()
 
     let animalAvatars = [
         ("🐶", "Puppy", Color(hex: "FFD54F")),
@@ -16,8 +17,6 @@ struct ProfilePopupView: View {
     ]
 
     @State private var selectedAvatar: Int = 0
-    @State private var isSaving: Bool = false
-    @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
@@ -172,23 +171,7 @@ struct ProfilePopupView: View {
     }
 
     private func saveAvatar(emoji: String) async {
-        guard let token = authManager.accessToken else { return }
-
-        isSaving = true
-        errorMessage = nil
-
-        do {
-            let avatarData = AvatarData(type: "emoji", value: emoji)
-            let updatedUser = try await ProfileService.shared.updateProfile(
-                token: token,
-                avatar: avatarData
-            )
-            authManager.updateUser(updatedUser)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-
-        isSaving = false
+        await viewModel.saveAvatar(emoji: emoji)
     }
 }
 

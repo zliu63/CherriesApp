@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var authManager = AuthManager.shared
+    @StateObject private var viewModel = HomeViewModel()
 
-    @State private var quests: [Quest] = []
+    // Quests now managed by HomeViewModel
     @State private var isLoadingQuests: Bool = false
 
     @State private var achievements: [Achievement] = [
@@ -23,11 +25,15 @@ struct HomeView: View {
                 VStack(spacing: 24) {
                     // Quest Cards Section
                     VStack(spacing: 16) {
+                        if viewModel.isFetching && viewModel.quests.isEmpty {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        }
                         if isLoadingQuests {
                             ProgressView()
                                 .padding()
                         } else {
-                            ForEach(quests) { quest in
+                            ForEach(viewModel.quests) { quest in
                                 QuestCard(quest: quest)
                             }
 
@@ -60,6 +66,9 @@ struct HomeView: View {
 
                     Spacer(minLength: 40)
                 }
+            }
+            .refreshable {
+                await viewModel.fetchQuests()
             }
             .scrollContentBackground(.hidden)
             .background(
@@ -136,10 +145,30 @@ struct HomeView: View {
             }
         }
         .fullScreenCover(isPresented: $showAddQuest) {
-            AddQuestView(quests: $quests)
+            AddQuestView(quests: $viewModel.quests)
         }
         .fullScreenCover(isPresented: $showLogin) {
             LoginView(authManager: authManager)
+        }
+        .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
+            if isAuthenticated {
+                Task { await viewModel.fetchQuests() }
+            } else {
+                viewModel.clearOnLogout()
+            }
+        }
+        .task {
+            if authManager.isAuthenticated {
+                await viewModel.fetchQuests()
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active && authManager.isAuthenticated {
+                Task { await viewModel.fetchQuests() }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .questsShouldRefresh)) { _ in
+            Task { await viewModel.fetchQuests(force: true) }
         }
         .overlay {
             if showProfilePopup {
@@ -158,7 +187,7 @@ struct HomeView: View {
 
         Task {
             do {
-                quests = try await QuestService.shared.getQuests(token: token)
+                viewModel.quests = try await QuestService.shared.getQuests(token: token)
             } catch {
                 print("Failed to load quests: \(error)")
             }
@@ -166,7 +195,8 @@ struct HomeView: View {
         }
     }
 }
-
+ 
 #Preview {
     HomeView()
 }
+
