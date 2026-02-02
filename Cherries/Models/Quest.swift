@@ -54,8 +54,14 @@ struct Quest: Codable, Identifiable {
     }
 
     var progress: Double {
-        // TODO: Calculate progress based on daily tasks
-        return 0.0
+        let now = Date()
+        if now <= startDate { return 0 }
+        if now >= endDate { return 1 }
+
+        let total = endDate.timeIntervalSince(startDate)
+        guard total > 0 else { return 1 }
+
+        return min(1, max(0, now.timeIntervalSince(startDate) / total))
     }
 
     var progressPercentage: Int {
