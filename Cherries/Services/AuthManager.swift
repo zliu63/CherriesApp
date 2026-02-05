@@ -40,8 +40,7 @@ class AuthManager: ObservableObject {
     }
 
     private func loadStoredSession() {
-        if let token = UserDefaults.standard.string(forKey: tokenKey),
-           let userData = UserDefaults.standard.data(forKey: userKey),
+        if let userData = UserDefaults.standard.data(forKey: userKey),
            let user = try? JSONDecoder().decode(User.self, from: userData) {
             self.currentUser = user
             self.isAuthenticated = true
