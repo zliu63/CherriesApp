@@ -10,8 +10,8 @@ struct SplashView: View {
             // Background gradient
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(hex: "FF6B8A"),
-                    Color(hex: "FF8E72")
+                    Color(hex: "FFD54F"),
+                    Color(hex: "FFAB40")
                 ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
