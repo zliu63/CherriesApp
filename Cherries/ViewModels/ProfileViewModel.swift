@@ -8,8 +8,12 @@ final class ProfileViewModel: ObservableObject {
 
     private let authManager: AuthManager
 
-    init(authManager: AuthManager = .shared) {
+    init(authManager: AuthManager) {
         self.authManager = authManager
+    }
+
+    convenience init() {
+        self.init(authManager: .shared)
     }
 
     func saveAvatar(emoji: String) async {

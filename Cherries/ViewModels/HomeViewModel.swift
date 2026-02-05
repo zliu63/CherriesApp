@@ -11,8 +11,12 @@ final class HomeViewModel: ObservableObject {
 
     private let authManager: AuthManager
 
-    init(authManager: AuthManager = .shared) {
+    init(authManager: AuthManager) {
         self.authManager = authManager
+    }
+
+    convenience init() {
+        self.init(authManager: .shared)
     }
 
     func fetchQuests(force: Bool = false) async {
@@ -39,3 +43,4 @@ final class HomeViewModel: ObservableObject {
         quests.removeAll()
     }
 }
+

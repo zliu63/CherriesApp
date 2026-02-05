@@ -185,7 +185,7 @@ struct HomeView: View {
         do {
             try await QuestService.shared.deleteQuest(questId: quest.id)
             if let idx = viewModel.quests.firstIndex(where: { $0.id == quest.id }) {
-                await MainActor.run { viewModel.quests.remove(at: idx) }
+                _ = await MainActor.run { viewModel.quests.remove(at: idx) }
             }
             NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
         } catch let error as APIError {
