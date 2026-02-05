@@ -5,6 +5,7 @@ struct QuestCard: View {
     var onDelete: (() -> Void)? = nil
 
     @State private var offsetX: CGFloat = 0
+    @State private var showShareSheet = false
     private let revealWidth: CGFloat = 88
     private let maxReveal: CGFloat = 100
 
@@ -70,7 +71,7 @@ struct QuestCard: View {
 
                 // Share code button
                 Button(action: {
-                    UIPasteboard.general.string = quest.shareCode
+                    showShareSheet = true
                 }) {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundColor(.white)
@@ -138,7 +139,21 @@ struct QuestCard: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: Color(hex: "00B4D8").opacity(0.3), radius: 15, x: 0, y: 8)
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheet(items: ["Come and join my adventure! Use this code \(quest.shareCode) to join!"])
+        }
     }
+}
+
+// MARK: - Share Sheet
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 #Preview {
