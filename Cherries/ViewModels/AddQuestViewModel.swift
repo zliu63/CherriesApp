@@ -18,12 +18,6 @@ final class AddQuestViewModel: ObservableObject {
         var points: Int
     }
 
-    private let authManager: AuthManager
-
-    init(authManager: AuthManager = .shared) {
-        self.authManager = authManager
-    }
-
     func addTask(title: String, pointsString: String) {
         guard !title.isEmpty, let points = Int(pointsString), points > 0 else { return }
         dailyTasks.append(TaskInput(title: title, points: points))
@@ -38,9 +32,6 @@ final class AddQuestViewModel: ObservableObject {
     func resetTaskDraft() { }
 
     func createQuest() async throws -> Quest {
-        guard let token = authManager.accessToken else {
-            throw AuthError.unauthorized
-        }
         isCreating = true
         errorMessage = nil
         defer { isCreating = false }
@@ -64,27 +55,21 @@ final class AddQuestViewModel: ObservableObject {
             dailyTasks: tasksToCreate
         )
 
-        let newQuest = try await QuestService.shared.createQuest(
-            token: token,
-            questData: questData
-        )
+        let newQuest = try await QuestService.shared.createQuest(questData: questData)
 
         return newQuest
     }
 
     func joinQuest() async throws -> Quest {
-        guard let token = authManager.accessToken else {
-            throw AuthError.unauthorized
-        }
         // Basic validation: 9-digit numeric code
         let digitsOnly = joinCode.filter { $0.isNumber }
         guard digitsOnly.count == 9 else {
-            throw QuestError.serverError("Invalid sharing code. Please enter the 9-digit code.")
+            throw APIError.serverError("Invalid sharing code. Please enter the 9-digit code.")
         }
         isJoining = true
         errorMessage = nil
         defer { isJoining = false }
-        let quest = try await QuestService.shared.joinQuest(token: token, shareCode: digitsOnly)
+        let quest = try await QuestService.shared.joinQuest(shareCode: digitsOnly)
         return quest
     }
 }

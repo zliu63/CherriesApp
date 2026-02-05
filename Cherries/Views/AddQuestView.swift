@@ -419,7 +419,7 @@ struct AddQuestView: View {
                 // Do not optimistically append; force HomeView to refresh from backend
                 NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
                 dismiss()
-            } catch let error as AuthError {
+            } catch let error as APIError {
                 viewModel.errorMessage = error.localizedDescription
             } catch {
                 viewModel.errorMessage = error.localizedDescription
@@ -434,9 +434,7 @@ struct AddQuestView: View {
                 // Do not optimistically append; force HomeView to refresh from backend
                 NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
                 dismiss()
-            } catch let error as QuestError {
-                viewModel.errorMessage = error.localizedDescription
-            } catch let error as AuthError {
+            } catch let error as APIError {
                 viewModel.errorMessage = error.localizedDescription
             } catch {
                 viewModel.errorMessage = error.localizedDescription

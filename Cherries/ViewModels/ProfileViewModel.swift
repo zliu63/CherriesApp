@@ -13,17 +13,13 @@ final class ProfileViewModel: ObservableObject {
     }
 
     func saveAvatar(emoji: String) async {
-        guard let token = authManager.accessToken else { return }
         isSaving = true
         errorMessage = nil
         defer { isSaving = false }
 
         do {
             let avatarData = AvatarData(type: "emoji", value: emoji)
-            let updatedUser = try await ProfileService.shared.updateProfile(
-                token: token,
-                avatar: avatarData
-            )
+            let updatedUser = try await ProfileService.shared.updateProfile(avatar: avatarData)
             authManager.updateUser(updatedUser)
         } catch {
             errorMessage = error.localizedDescription

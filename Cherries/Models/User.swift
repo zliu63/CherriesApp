@@ -60,10 +60,6 @@ struct LogoutResponse: Codable {
     let message: String
 }
 
-struct APIError: Codable {
-    let detail: String
-}
-
 struct UserUpdate: Codable {
     let username: String?
     let avatar: AvatarData?

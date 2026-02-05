@@ -109,7 +109,7 @@ class AuthManager: ObservableObject {
         } catch {
             print("[AuthManager] Failed to refresh token: \(error.localizedDescription)")
             // If refresh fails (e.g., refresh token expired), log the user out
-            if case AuthError.unauthorized = error {
+            if case APIError.unauthorized = error {
                 await logout()
             }
         }

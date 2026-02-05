@@ -182,14 +182,13 @@ struct HomeView: View {
     }
 
     private func deleteQuest(_ quest: Quest) async {
-        guard let token = authManager.accessToken else { return }
         do {
-            try await QuestService.shared.deleteQuest(token: token, questId: quest.id)
+            try await QuestService.shared.deleteQuest(questId: quest.id)
             if let idx = viewModel.quests.firstIndex(where: { $0.id == quest.id }) {
                 await MainActor.run { viewModel.quests.remove(at: idx) }
             }
             NotificationCenter.default.post(name: .questsShouldRefresh, object: nil)
-        } catch let error as QuestError {
+        } catch let error as APIError {
             print("[HomeView] Failed to delete quest: \(error.localizedDescription)")
         } catch {
             print("[HomeView] Failed to delete quest: \(error)")

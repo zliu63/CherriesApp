@@ -265,7 +265,7 @@ struct SignupView: View {
         Task {
             do {
                 try await authManager.signup(email: email, username: username, password: password)
-            } catch let error as AuthError {
+            } catch let error as APIError {
                 errorMessage = error.localizedDescription
                 showError = true
             } catch {

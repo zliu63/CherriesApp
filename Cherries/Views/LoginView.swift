@@ -174,7 +174,7 @@ struct LoginView: View {
         Task {
             do {
                 try await authManager.login(email: email, password: password)
-            } catch let error as AuthError {
+            } catch let error as APIError {
                 errorMessage = error.localizedDescription
                 showError = true
             } catch {

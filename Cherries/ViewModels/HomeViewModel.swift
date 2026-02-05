@@ -23,12 +23,12 @@ final class HomeViewModel: ObservableObject {
         }
         lastFetchAt = Date()
 
-        guard authManager.isAuthenticated, let token = authManager.accessToken else { return }
+        guard authManager.isAuthenticated else { return }
         if isFetching { return }
         isFetching = true
         defer { isFetching = false }
         do {
-            let fetched = try await QuestService.shared.getQuests(token: token)
+            let fetched = try await QuestService.shared.getQuests()
             quests = fetched
         } catch {
             print("[HomeViewModel] Failed to fetch quests: \(error)")

@@ -1,31 +1,5 @@
 import Foundation
 
-enum AuthError: Error, LocalizedError {
-    case invalidURL
-    case networkError(Error)
-    case decodingError(Error)
-    case serverError(String)
-    case unauthorized
-    case unknown
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL:
-            return "Invalid URL"
-        case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
-        case .decodingError(let error):
-            return "Decoding error: \(error.localizedDescription)"
-        case .serverError(let message):
-            return message
-        case .unauthorized:
-            return "Invalid email or password"
-        case .unknown:
-            return "An unknown error occurred"
-        }
-    }
-}
-
 class AuthService {
     static let shared = AuthService()
 
@@ -47,7 +21,7 @@ class AuthService {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw AuthError.unknown
+                throw APIError.unknown
             }
 
             if httpResponse.statusCode == 200 {
@@ -55,19 +29,19 @@ class AuthService {
                 decoder.dateDecodingStrategy = .iso8601
                 return try decoder.decode(AuthResponse.self, from: data)
             } else if httpResponse.statusCode == 401 {
-                throw AuthError.unauthorized
+                throw APIError.unauthorized(reason: .invalidCredentials)
             } else {
-                if let apiError = try? JSONDecoder().decode(APIError.self, from: data) {
-                    throw AuthError.serverError(apiError.detail)
+                if let errResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    throw APIError.serverError(errResponse.detail)
                 }
-                throw AuthError.serverError("Server error: \(httpResponse.statusCode)")
+                throw APIError.serverError("Server error: \(httpResponse.statusCode)")
             }
-        } catch let error as AuthError {
+        } catch let error as APIError {
             throw error
         } catch let error as DecodingError {
-            throw AuthError.decodingError(error)
+            throw APIError.decodingError(error)
         } catch {
-            throw AuthError.networkError(error)
+            throw APIError.networkError(error)
         }
     }
 
@@ -85,7 +59,7 @@ class AuthService {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw AuthError.unknown
+                throw APIError.unknown
             }
 
             if httpResponse.statusCode == 201 {
@@ -93,17 +67,17 @@ class AuthService {
                 decoder.dateDecodingStrategy = .iso8601
                 return try decoder.decode(AuthResponse.self, from: data)
             } else {
-                if let apiError = try? JSONDecoder().decode(APIError.self, from: data) {
-                    throw AuthError.serverError(apiError.detail)
+                if let errResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    throw APIError.serverError(errResponse.detail)
                 }
-                throw AuthError.serverError("Server error: \(httpResponse.statusCode)")
+                throw APIError.serverError("Server error: \(httpResponse.statusCode)")
             }
-        } catch let error as AuthError {
+        } catch let error as APIError {
             throw error
         } catch let error as DecodingError {
-            throw AuthError.decodingError(error)
+            throw APIError.decodingError(error)
         } catch {
-            throw AuthError.networkError(error)
+            throw APIError.networkError(error)
         }
     }
 
@@ -118,7 +92,7 @@ class AuthService {
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-            throw AuthError.unknown
+            throw APIError.unknown
         }
     }
 
@@ -136,7 +110,7 @@ class AuthService {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw AuthError.unknown
+                throw APIError.unknown
             }
 
             if httpResponse.statusCode == 200 {
@@ -144,19 +118,19 @@ class AuthService {
                 decoder.dateDecodingStrategy = .iso8601
                 return try decoder.decode(AuthResponse.self, from: data)
             } else if httpResponse.statusCode == 401 {
-                throw AuthError.unauthorized
+                throw APIError.unauthorized(reason: .tokenExpired)
             } else {
-                if let apiError = try? JSONDecoder().decode(APIError.self, from: data) {
-                    throw AuthError.serverError(apiError.detail)
+                if let errResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    throw APIError.serverError(errResponse.detail)
                 }
-                throw AuthError.serverError("Server error: \(httpResponse.statusCode)")
+                throw APIError.serverError("Server error: \(httpResponse.statusCode)")
             }
-        } catch let error as AuthError {
+        } catch let error as APIError {
             throw error
         } catch let error as DecodingError {
-            throw AuthError.decodingError(error)
+            throw APIError.decodingError(error)
         } catch {
-            throw AuthError.networkError(error)
+            throw APIError.networkError(error)
         }
     }
 }
