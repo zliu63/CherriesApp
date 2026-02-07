@@ -25,6 +25,14 @@
 		326FA1892F300E3000179673 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1862F300E3000179673 /* ProfileViewModel.swift */; };
 		326FA18C2F3430C600179673 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA18A2F3430C600179673 /* APIClient.swift */; };
 		326FA18D2F3430C600179673 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA18B2F3430C600179673 /* APIError.swift */; };
+		326FA18F2F379E6A00179673 /* CheckInService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA18E2F379E6A00179673 /* CheckInService.swift */; };
+		326FA1922F379E7600179673 /* DailyTaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1902F379E7600179673 /* DailyTaskListView.swift */; };
+		326FA1932F379E7600179673 /* QuestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1912F379E7600179673 /* QuestDetailView.swift */; };
+		326FA1952F379E8500179673 /* QuestDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1942F379E8500179673 /* QuestDetailViewModel.swift */; };
+		326FA1972F379E8E00179673 /* CheckIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1962F379E8E00179673 /* CheckIn.swift */; };
+		326FA19A2F379E9A00179673 /* CalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1982F379E9A00179673 /* CalendarGridView.swift */; };
+		326FA19B2F379E9A00179673 /* StatsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA1992F379E9A00179673 /* StatsHeaderView.swift */; };
+		326FA19D2F37A43C00179673 /* CheckInPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326FA19C2F37A43C00179673 /* CheckInPopupView.swift */; };
 		A1000001 /* CherriesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* CherriesApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000003 /* Assets.xcassets */; };
@@ -59,6 +67,14 @@
 		326FA1862F300E3000179673 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		326FA18A2F3430C600179673 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		326FA18B2F3430C600179673 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		326FA18E2F379E6A00179673 /* CheckInService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInService.swift; sourceTree = "<group>"; };
+		326FA1902F379E7600179673 /* DailyTaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyTaskListView.swift; sourceTree = "<group>"; };
+		326FA1912F379E7600179673 /* QuestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestDetailView.swift; sourceTree = "<group>"; };
+		326FA1942F379E8500179673 /* QuestDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestDetailViewModel.swift; sourceTree = "<group>"; };
+		326FA1962F379E8E00179673 /* CheckIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckIn.swift; sourceTree = "<group>"; };
+		326FA1982F379E9A00179673 /* CalendarGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGridView.swift; sourceTree = "<group>"; };
+		326FA1992F379E9A00179673 /* StatsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsHeaderView.swift; sourceTree = "<group>"; };
+		326FA19C2F37A43C00179673 /* CheckInPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInPopupView.swift; sourceTree = "<group>"; };
 		A2000001 /* CherriesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CherriesApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -89,6 +105,7 @@
 		326FA1662F2B2DB700179673 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				326FA18E2F379E6A00179673 /* CheckInService.swift */,
 				326FA18A2F3430C600179673 /* APIClient.swift */,
 				326FA18B2F3430C600179673 /* APIError.swift */,
 				326FA1732F2C403700179673 /* QuestService.swift */,
@@ -102,6 +119,7 @@
 		326FA1832F300DAB00179673 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				326FA1942F379E8500179673 /* QuestDetailViewModel.swift */,
 				326FA1842F300E3000179673 /* AddQuestViewModel.swift */,
 				326FA1852F300E3000179673 /* HomeViewModel.swift */,
 				326FA1862F300E3000179673 /* ProfileViewModel.swift */,
@@ -145,6 +163,8 @@
 		A5000004 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				326FA1902F379E7600179673 /* DailyTaskListView.swift */,
+				326FA1912F379E7600179673 /* QuestDetailView.swift */,
 				326FA16D2F2C2EB900179673 /* ProfilePopupView.swift */,
 				326FA1692F2B2DD600179673 /* LoginView.swift */,
 				326FA16A2F2B2DD600179673 /* SignupView.swift */,
@@ -159,6 +179,7 @@
 		A5000005 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				326FA1962F379E8E00179673 /* CheckIn.swift */,
 				326FA15E2F2B2CE100179673 /* User.swift */,
 				A2000006 /* Quest.swift */,
 				A2000007 /* Achievement.swift */,
@@ -169,6 +190,9 @@
 		A5000006 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				326FA19C2F37A43C00179673 /* CheckInPopupView.swift */,
+				326FA1982F379E9A00179673 /* CalendarGridView.swift */,
+				326FA1992F379E9A00179673 /* StatsHeaderView.swift */,
 				326FA1752F2FEC0700179673 /* ParticipantAvatarsView.swift */,
 				326FA1712F2C3A6100179673 /* AvatarView.swift */,
 				A2000008 /* QuestCard.swift */,
@@ -252,6 +276,7 @@
 				326FA1742F2C403700179673 /* QuestService.swift in Sources */,
 				326FA15F2F2B2CE100179673 /* User.swift in Sources */,
 				A1000001 /* CherriesApp.swift in Sources */,
+				326FA19D2F37A43C00179673 /* CheckInPopupView.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
 				326FA1872F300E3000179673 /* AddQuestViewModel.swift in Sources */,
 				326FA1882F300E3000179673 /* HomeViewModel.swift in Sources */,
@@ -260,6 +285,8 @@
 				A1000005 /* HomeView.swift in Sources */,
 				326FA1782F2FEFB300179673 /* Constants.swift in Sources */,
 				A1000006 /* Quest.swift in Sources */,
+				326FA19A2F379E9A00179673 /* CalendarGridView.swift in Sources */,
+				326FA19B2F379E9A00179673 /* StatsHeaderView.swift in Sources */,
 				326FA1762F2FEC0700179673 /* ParticipantAvatarsView.swift in Sources */,
 				A1000007 /* Achievement.swift in Sources */,
 				A1000008 /* QuestCard.swift in Sources */,
@@ -275,10 +302,15 @@
 				326FA1702F2C3A4100179673 /* ProfileService.swift in Sources */,
 				A1000012 /* AppColors.swift in Sources */,
 				326FA1672F2B2DB700179673 /* AuthManager.swift in Sources */,
+				326FA1972F379E8E00179673 /* CheckIn.swift in Sources */,
 				326FA1682F2B2DB700179673 /* AuthService.swift in Sources */,
 				A1000013 /* AddQuestView.swift in Sources */,
 				326FA18C2F3430C600179673 /* APIClient.swift in Sources */,
+				326FA18F2F379E6A00179673 /* CheckInService.swift in Sources */,
+				326FA1952F379E8500179673 /* QuestDetailViewModel.swift in Sources */,
 				326FA18D2F3430C600179673 /* APIError.swift in Sources */,
+				326FA1922F379E7600179673 /* DailyTaskListView.swift in Sources */,
+				326FA1932F379E7600179673 /* QuestDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

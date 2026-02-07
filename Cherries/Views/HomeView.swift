@@ -15,9 +15,10 @@ struct HomeView: View {
     @State private var showAddQuest = false
     @State private var showLogin = false
     @State private var showProfilePopup = false
+    @State private var navigationPath = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScrollView {
                 VStack(spacing: 24) {
                     // Quest Cards Section
@@ -31,6 +32,9 @@ struct HomeView: View {
                                 quest: quest,
                                 onDelete: {
                                     Task { await deleteQuest(quest) }
+                                },
+                                onTap: {
+                                    navigationPath.append(quest)
                                 }
                             )
                         }
@@ -143,6 +147,10 @@ struct HomeView: View {
                         }
                     }
                 }
+            }
+            .navigationDestination(for: Quest.self) { quest in
+                QuestDetailView(quest: quest)
+                    .navigationBarBackButtonHidden(true)
             }
         }
         .fullScreenCover(isPresented: $showAddQuest) {

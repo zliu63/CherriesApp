@@ -3,6 +3,7 @@ import SwiftUI
 struct QuestCard: View {
     let quest: Quest
     var onDelete: (() -> Void)? = nil
+    var onTap: (() -> Void)? = nil
 
     @State private var offsetX: CGFloat = 0
     @State private var showShareSheet = false
@@ -29,6 +30,15 @@ struct QuestCard: View {
                 .contentShape(Rectangle())
                 .offset(x: offsetX)
                 .zIndex(1)
+                .onTapGesture {
+                    if offsetX == 0 {
+                        onTap?()
+                    } else {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            offsetX = 0
+                        }
+                    }
+                }
                 .highPriorityGesture(
                     DragGesture(minimumDistance: 8, coordinateSpace: .local)
                         .onChanged { value in

@@ -20,7 +20,15 @@ struct Participant: Codable, Identifiable {
 }
 
 
-struct Quest: Codable, Identifiable {
+struct Quest: Codable, Identifiable, Hashable {
+    static func == (lhs: Quest, rhs: Quest) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     let id: String
     let name: String
     let description: String?
