@@ -29,9 +29,11 @@ class APIClient {
             }
 
             // Try simple date format (yyyy-MM-dd)
+            // Use local timezone so "2024-02-07" becomes midnight in user's timezone
+            // This ensures date comparisons work correctly for check-in dates
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
-            dateFormatter.timeZone = TimeZone(identifier: "UTC")
+            dateFormatter.timeZone = TimeZone.current
             if let date = dateFormatter.date(from: dateString) {
                 return date
             }
