@@ -87,20 +87,59 @@ final class QuestDetailViewModel: ObservableObject {
 
     /// Add a check-in for a task on a specific date (increments count)
     func addCheckIn(for task: DailyTask, on date: Date) async {
+        // Optimistically update UI so the counter feels instant.
+        let previousCheckIns = checkIns
+        let targetDate = calendar.startOfDay(for: date)
+        var temporaryId: String?
+
+        if let index = checkIns.firstIndex(where: { $0.dailyTaskId == task.id && calendar.isDate($0.checkInDate, inSameDayAs: targetDate) }) {
+            let existing = checkIns[index]
+            let optimistic = CheckIn(
+                id: existing.id,
+                userId: existing.userId,
+                questId: existing.questId,
+                dailyTaskId: existing.dailyTaskId,
+                checkInDate: existing.checkInDate,
+                count: existing.count + 1,
+                notes: existing.notes,
+                createdAt: existing.createdAt,
+                updatedAt: existing.updatedAt
+            )
+            checkIns[index] = optimistic
+        } else {
+            let optimistic = CheckIn(
+                id: "temp-\(UUID().uuidString)",
+                userId: "",
+                questId: quest.id,
+                dailyTaskId: task.id,
+                checkInDate: targetDate,
+                count: 1,
+                notes: nil,
+                createdAt: Date(),
+                updatedAt: nil
+            )
+            temporaryId = optimistic.id
+            checkIns.append(optimistic)
+        }
+
         do {
             let updatedCheckIn = try await CheckInService.shared.incrementCheckIn(
                 questId: quest.id,
                 dailyTaskId: task.id,
                 date: date
             )
-            // Update or add the check-in in local array
-            if let index = checkIns.firstIndex(where: { $0.id == updatedCheckIn.id }) {
+            // Replace optimistic entry with server response (using temp id or date/task match)
+            if let tempId = temporaryId, let index = checkIns.firstIndex(where: { $0.id == tempId }) {
+                checkIns[index] = updatedCheckIn
+            } else if let index = checkIns.firstIndex(where: { $0.dailyTaskId == updatedCheckIn.dailyTaskId && calendar.isDate($0.checkInDate, inSameDayAs: updatedCheckIn.checkInDate) }) {
                 checkIns[index] = updatedCheckIn
             } else {
                 checkIns.append(updatedCheckIn)
             }
             await loadStats()
         } catch {
+            // Roll back optimistic change on failure
+            checkIns = previousCheckIns
             self.error = "Failed to create check-in"
             print("[QuestDetailViewModel] Increment check-in failed: \(error)")
         }
@@ -109,6 +148,27 @@ final class QuestDetailViewModel: ObservableObject {
     /// Remove one check-in for a task on a specific date (decrements count)
     func removeCheckIn(for task: DailyTask, on date: Date) async {
         guard let existingCheckIn = getCheckIn(for: task, on: date) else { return }
+
+        // Optimistically update UI
+        let previousCheckIns = checkIns
+        if existingCheckIn.count > 1 {
+            let optimistic = CheckIn(
+                id: existingCheckIn.id,
+                userId: existingCheckIn.userId,
+                questId: existingCheckIn.questId,
+                dailyTaskId: existingCheckIn.dailyTaskId,
+                checkInDate: existingCheckIn.checkInDate,
+                count: existingCheckIn.count - 1,
+                notes: existingCheckIn.notes,
+                createdAt: existingCheckIn.createdAt,
+                updatedAt: existingCheckIn.updatedAt
+            )
+            if let index = checkIns.firstIndex(where: { $0.id == existingCheckIn.id }) {
+                checkIns[index] = optimistic
+            }
+        } else {
+            checkIns.removeAll { $0.id == existingCheckIn.id }
+        }
 
         do {
             let updatedCheckIn = try await CheckInService.shared.decrementCheckIn(
@@ -127,6 +187,8 @@ final class QuestDetailViewModel: ObservableObject {
             }
             await loadStats()
         } catch {
+            // Roll back optimistic change on failure
+            checkIns = previousCheckIns
             self.error = "Failed to remove check-in"
             print("[QuestDetailViewModel] Decrement check-in failed: \(error)")
         }
