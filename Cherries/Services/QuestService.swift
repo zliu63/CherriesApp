@@ -10,6 +10,11 @@ class QuestService {
         return try await APIClient.shared.post("/quests", body: questData)
     }
 
+    /// Get a single Quest by ID
+    func getQuest(questId: String) async throws -> Quest {
+        return try await APIClient.shared.get("/quests/\(questId)")
+    }
+
     /// Get all Quests for the current user
     func getQuests() async throws -> [Quest] {
         return try await APIClient.shared.get("/quests")

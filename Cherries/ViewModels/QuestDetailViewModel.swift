@@ -13,6 +13,7 @@ final class QuestDetailViewModel: ObservableObject {
     @Published var showCheckInPopup: Bool = false
 
     private let calendar = Calendar.current
+    private var scoreboardObserver: NSObjectProtocol?
 
     init(quest: Quest) {
         self.quest = quest
@@ -28,6 +29,28 @@ final class QuestDetailViewModel: ObservableObject {
             self.selectedDate = today
             self.currentMonth = today
         }
+
+        scoreboardObserver = NotificationCenter.default.addObserver(
+            forName: .scoreboardDidUpdate,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self,
+                  let questId = notification.userInfo?["quest_id"] as? String,
+                  questId == self.quest.id else { return }
+            Task { @MainActor in
+                await self.refreshScoreboard()
+            }
+        }
+
+        WebSocketManager.shared.connect(questId: quest.id)
+    }
+
+    deinit {
+        if let observer = scoreboardObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        WebSocketManager.shared.disconnect()
     }
 
     // MARK: - Data Loading
@@ -207,6 +230,15 @@ final class QuestDetailViewModel: ObservableObject {
             stats = try await CheckInService.shared.getStats(questId: quest.id)
         } catch {
             print("[QuestDetailViewModel] Failed to reload stats: \(error)")
+        }
+    }
+
+    /// Re-fetch quest data (participants/points) for scoreboard updates
+    private func refreshScoreboard() async {
+        do {
+            quest = try await QuestService.shared.getQuest(questId: quest.id)
+        } catch {
+            print("[QuestDetailViewModel] Failed to refresh scoreboard: \(error)")
         }
     }
 
