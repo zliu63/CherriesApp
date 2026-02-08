@@ -16,6 +16,19 @@ final class ProfileViewModel: ObservableObject {
         self.init(authManager: .shared)
     }
 
+    func saveUsername(_ username: String) async {
+        isSaving = true
+        errorMessage = nil
+        defer { isSaving = false }
+
+        do {
+            let updatedUser = try await ProfileService.shared.updateProfile(username: username)
+            authManager.updateUser(updatedUser)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func saveAvatar(emoji: String) async {
         isSaving = true
         errorMessage = nil

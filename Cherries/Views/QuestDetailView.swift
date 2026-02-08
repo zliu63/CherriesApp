@@ -11,11 +11,14 @@ struct QuestDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Stats Header
-                StatsHeaderView(stats: viewModel.stats)
+                // Scoreboard
+                ScoreboardView(participants: viewModel.quest.participants)
 
                 // Calendar Grid
                 CalendarGridView(viewModel: viewModel)
+
+                // Stats Header
+                StatsHeaderView(stats: viewModel.stats)
 
                 // Hint text
                 Text("Tap a date to check in")

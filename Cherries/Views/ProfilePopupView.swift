@@ -17,6 +17,9 @@ struct ProfilePopupView: View {
     ]
 
     @State private var selectedAvatar: Int = 0
+    @State private var editingUsername = false
+    @State private var usernameText = ""
+    @State private var showSaveSuccess = false
 
     var body: some View {
         ZStack {
@@ -56,9 +59,71 @@ struct ProfilePopupView: View {
                 // User info
                 if let user = authManager.currentUser {
                     VStack(spacing: 8) {
-                        Text(user.username ?? "User")
-                            .font(.system(size: 20, weight: .semibold, design: .rounded))
-                            .foregroundColor(.primary)
+                        if editingUsername {
+                            HStack(spacing: 8) {
+                                TextField("Username", text: $usernameText)
+                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                    .textFieldStyle(.plain)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(Color(hex: "F8BBD0").opacity(0.2))
+                                    .cornerRadius(12)
+                                    .multilineTextAlignment(.center)
+
+                                Button(action: {
+                                    let name = usernameText.trimmingCharacters(in: .whitespaces)
+                                    guard !name.isEmpty else { return }
+                                    Task {
+                                        await viewModel.saveUsername(name)
+                                        if viewModel.errorMessage == nil {
+                                            editingUsername = false
+                                            showSaveSuccess = true
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                                showSaveSuccess = false
+                                            }
+                                        }
+                                    }
+                                }) {
+                                    if viewModel.isSaving {
+                                        ProgressView()
+                                            .frame(width: 32, height: 32)
+                                    } else {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .font(.system(size: 24))
+                                            .foregroundColor(Color(hex: "E91E63"))
+                                    }
+                                }
+                                .disabled(viewModel.isSaving)
+                            }
+                            .padding(.horizontal, 24)
+                        } else {
+                            HStack(spacing: 6) {
+                                Text(user.username ?? "User")
+                                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.primary)
+
+                                Button(action: {
+                                    usernameText = user.username ?? ""
+                                    editingUsername = true
+                                }) {
+                                    Image(systemName: "pencil.circle.fill")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(Color(hex: "E91E63").opacity(0.6))
+                                }
+                            }
+                        }
+
+                        if showSaveSuccess {
+                            Text("Saved!")
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundColor(Color(hex: "4CAF50"))
+                        }
+
+                        if let error = viewModel.errorMessage {
+                            Text(error)
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundColor(.red)
+                        }
 
                         Text(user.email)
                             .font(.system(size: 14, weight: .regular))
