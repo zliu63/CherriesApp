@@ -8,6 +8,7 @@ struct CherryLogo: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: size, height: size)
+            .offset(x: 4)
     }
 }
 

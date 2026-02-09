@@ -6,9 +6,9 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     @State private var achievements: [Achievement] = [
-        Achievement(id: UUID(), title: "First Quest", icon: "trophy.fill", color: Color(hex: "FFA726")),
-        Achievement(id: UUID(), title: "3 Day Streak", icon: "star.fill", color: Color(hex: "7E57C2")),
-        Achievement(id: UUID(), title: "Goal Master", icon: "target", color: Color(hex: "26A69A"))
+        //Achievement(id: UUID(), title: "First Quest", icon: "trophy.fill", color: Color(hex: "FFA726")),
+        //Achievement(id: UUID(), title: "3 Day Streak", icon: "star.fill", color: Color(hex: "7E57C2")),
+        //Achievement(id: UUID(), title: "Goal Master", icon: "target", color: Color(hex: "26A69A"))
     ]
 
     @State private var streakCount: Int = 3
@@ -100,15 +100,6 @@ struct HomeView: View {
 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
-                        // Streak Counter
-                        HStack(spacing: 4) {
-                            Image(systemName: "flame.fill")
-                                .foregroundColor(Color(hex: "FF6B35"))
-                            Text("\(streakCount)")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(Color(hex: "FF6B35"))
-                        }
-
                         // Profile Button
                         Button(action: {
                             if authManager.isAuthenticated {
