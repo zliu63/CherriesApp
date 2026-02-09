@@ -16,6 +16,7 @@ class AuthManager: ObservableObject {
 
     /// Token refresh threshold in seconds (15 minutes)
     private let tokenRefreshThreshold: TimeInterval = 15 * 60
+    private var refreshTask: Task<Void, Never>?
 
     private init() {
         loadStoredSession()
@@ -95,23 +96,32 @@ class AuthManager: ObservableObject {
 
     /// Refresh access token if needed (token older than 15 minutes)
     func refreshTokenIfNeeded() async {
+        // If a refresh is already in flight, await it instead of starting another
+        if let existing = refreshTask {
+            await existing.value
+            return
+        }
+
         guard isAuthenticated,
               shouldRefreshToken,
               let currentRefreshToken = refreshToken else {
             return
         }
 
-        do {
-            let response = try await AuthService.shared.refreshToken(refreshToken: currentRefreshToken)
-            saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
-            print("[AuthManager] Token refreshed successfully")
-        } catch {
-            print("[AuthManager] Failed to refresh token: \(error.localizedDescription)")
-            // If refresh fails (e.g., refresh token expired), log the user out
-            if case APIError.unauthorized = error {
-                await logout()
+        refreshTask = Task {
+            defer { refreshTask = nil }
+            do {
+                let response = try await AuthService.shared.refreshToken(refreshToken: currentRefreshToken)
+                saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
+                print("[AuthManager] Token refreshed successfully")
+            } catch {
+                print("[AuthManager] Failed to refresh token: \(error.localizedDescription)")
+                if case APIError.unauthorized = error {
+                    await logout()
+                }
             }
         }
+        await refreshTask?.value
     }
 
     func updateUser(_ updatedUser: User) {
