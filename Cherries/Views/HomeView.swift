@@ -52,20 +52,22 @@ struct HomeView: View {
                     .padding(.top, 16)
 
                     // Recent Achievements Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("RECENT ACHIEVEMENTS")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(.secondary)
-                            .tracking(1.2)
-                            .padding(.horizontal, 24)
+                    if !achievements.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("RECENT ACHIEVEMENTS")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.secondary)
+                                .tracking(1.2)
+                                .padding(.horizontal, 24)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(achievements) { achievement in
-                                    AchievementBadge(achievement: achievement)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(achievements) { achievement in
+                                        AchievementBadge(achievement: achievement)
+                                    }
                                 }
+                                .padding(.horizontal, 24)
                             }
-                            .padding(.horizontal, 24)
                         }
                     }
 
