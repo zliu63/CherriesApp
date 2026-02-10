@@ -30,27 +30,9 @@ final class QuestDetailViewModel: ObservableObject {
             self.currentMonth = today
         }
 
-        scoreboardObserver = NotificationCenter.default.addObserver(
-            forName: .scoreboardDidUpdate,
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            guard let self,
-                  let questId = notification.userInfo?["quest_id"] as? String,
-                  questId == self.quest.id else { return }
-            Task { @MainActor in
-                await self.refreshScoreboard()
-            }
-        }
-
-        WebSocketManager.shared.connect(questId: quest.id)
     }
 
     deinit {
-        if let observer = scoreboardObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-        WebSocketManager.shared.disconnect()
     }
 
     // MARK: - Data Loading
@@ -160,6 +142,7 @@ final class QuestDetailViewModel: ObservableObject {
                 checkIns.append(updatedCheckIn)
             }
             await loadStats()
+            await refreshScoreboard()
         } catch {
             // Roll back optimistic change on failure
             checkIns = previousCheckIns
@@ -209,6 +192,7 @@ final class QuestDetailViewModel: ObservableObject {
                 checkIns.removeAll { $0.id == existingCheckIn.id }
             }
             await loadStats()
+            await refreshScoreboard()
         } catch {
             // Roll back optimistic change on failure
             checkIns = previousCheckIns
