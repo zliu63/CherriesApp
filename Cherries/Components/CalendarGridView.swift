@@ -33,7 +33,7 @@ struct CalendarGridView: View {
 
             // Weekday Headers
             HStack(spacing: 0) {
-                ForEach(viewModel.weekdaySymbols, id: \.self) { symbol in
+                ForEach(Array(viewModel.weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                     Text(symbol)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.secondary)
