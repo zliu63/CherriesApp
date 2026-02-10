@@ -2,66 +2,16 @@ import SwiftUI
 
 struct QuestCard: View {
     let quest: Quest
-    var onDelete: (() -> Void)? = nil
     var onTap: (() -> Void)? = nil
 
-    @State private var offsetX: CGFloat = 0
     @State private var showShareSheet = false
-    private let revealWidth: CGFloat = 88
-    private let maxReveal: CGFloat = 100
 
     var body: some View {
-        ZStack(alignment: .trailing) {
-            if let onDelete {
-                Button(role: .destructive) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) { offsetX = 0 }
-                    onDelete()
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                        .font(.system(size: 16, weight: .semibold))
-                        .frame(width: revealWidth)
-                        .frame(maxHeight: .infinity)
-                }
-                .tint(.red)
-                .zIndex(0)
+        cardContent
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onTap?()
             }
-
-            cardContent
-                .contentShape(Rectangle())
-                .offset(x: offsetX)
-                .zIndex(1)
-                .onTapGesture {
-                    if offsetX == 0 {
-                        onTap?()
-                    } else {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            offsetX = 0
-                        }
-                    }
-                }
-                .highPriorityGesture(
-                    DragGesture(minimumDistance: 8, coordinateSpace: .local)
-                        .onChanged { value in
-                            let translation = value.translation.width
-                            if translation < 0 { // left swipe to reveal
-                                offsetX = max(-maxReveal, translation)
-                            } else { // right swipe to close
-                                offsetX = min(0, offsetX + translation)
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                if abs(offsetX) > revealWidth * 0.6 {
-                                    offsetX = -revealWidth
-                                } else {
-                                    offsetX = 0
-                                }
-                            }
-                        }
-                )
-                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: offsetX)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     private var cardContent: some View {
@@ -194,27 +144,6 @@ struct ShareSheet: UIViewControllerRepresentable {
                 joinedAt: Date(),
                 totalPoints: 50
             ),
-            Participant(
-                userId: "user3",
-                username: "Friend2",
-                avatar: AvatarData(type: "emoji", value: "🐼"),
-                joinedAt: Date(),
-                totalPoints: 30
-            ),
-            Participant(
-                userId: "user4",
-                username: "Friend3",
-                avatar: AvatarData(type: "emoji", value: "🐨"),
-                joinedAt: Date(),
-                totalPoints: 20
-            ),
-            Participant(
-                userId: "user5",
-                username: "Friend4",
-                avatar: AvatarData(type: "emoji", value: "🦊"),
-                joinedAt: Date(),
-                totalPoints: 10
-            )
         ]
     ))
     .padding()

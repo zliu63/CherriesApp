@@ -16,49 +16,60 @@ struct HomeView: View {
     @State private var showLogin = false
     @State private var showProfilePopup = false
     @State private var navigationPath = NavigationPath()
+    @State private var questPendingDeletion: Quest? = nil
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Quest Cards Section
-                    VStack(spacing: 16) {
-                        if viewModel.isFetching && viewModel.quests.isEmpty {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                        }
-                        ForEach(viewModel.quests) { quest in
-                            QuestCard(
-                                quest: quest,
-                                onDelete: {
-                                    Task { await deleteQuest(quest) }
-                                },
-                                onTap: {
-                                    navigationPath.append(quest)
-                                }
-                            )
-                        }
-
-                        // Add New Quest Card
-                        AddQuestCard {
-                            if authManager.isAuthenticated {
-                                showAddQuest = true
-                            } else {
-                                showLogin = true
+            List {
+                // Quest Cards Section
+                Section {
+                    if viewModel.isFetching && viewModel.quests.isEmpty {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
+                    }
+                    ForEach(viewModel.quests) { quest in
+                        QuestCard(
+                            quest: quest,
+                            onTap: {
+                                navigationPath.append(quest)
+                            }
+                        )
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                questPendingDeletion = quest
+                            } label: {
+                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 16)
 
-                    // Recent Achievements Section
-                    if !achievements.isEmpty {
+                    // Add New Quest Card
+                    AddQuestCard {
+                        if authManager.isAuthenticated {
+                            showAddQuest = true
+                        } else {
+                            showLogin = true
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
+                }
+
+                // Recent Achievements Section
+                if !achievements.isEmpty {
+                    Section {
                         VStack(alignment: .leading, spacing: 16) {
                             Text("RECENT ACHIEVEMENTS")
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundColor(.secondary)
                                 .tracking(1.2)
-                                .padding(.horizontal, 24)
 
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
@@ -66,14 +77,15 @@ struct HomeView: View {
                                         AchievementBadge(achievement: achievement)
                                     }
                                 }
-                                .padding(.horizontal, 24)
                             }
                         }
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 24, bottom: 8, trailing: 24))
                     }
-
-                    Spacer(minLength: 40)
                 }
             }
+            .listStyle(.plain)
             .refreshable {
                 await viewModel.fetchQuests()
             }
@@ -174,6 +186,25 @@ struct HomeView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .questsShouldRefresh)) { _ in
             Task { await viewModel.fetchQuests(force: true) }
+        }
+        .alert(
+            "Delete Quest",
+            isPresented: Binding(
+                get: { questPendingDeletion != nil },
+                set: { if !$0 { questPendingDeletion = nil } }
+            )
+        ) {
+            Button("Cancel", role: .cancel) {
+                questPendingDeletion = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let quest = questPendingDeletion {
+                    questPendingDeletion = nil
+                    Task { await deleteQuest(quest) }
+                }
+            }
+        } message: {
+            Text("Are you sure you want to delete \"\(questPendingDeletion?.name ?? "")\"? This action cannot be undone.")
         }
         .overlay {
             if showProfilePopup {
