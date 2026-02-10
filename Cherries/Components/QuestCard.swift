@@ -30,13 +30,13 @@ struct QuestCard: View {
                 Spacer()
 
                 // Share code button
-                Button(action: {
-                    showShareSheet = true
-                }) {
-                    Image(systemName: "square.and.arrow.up")
-                        .foregroundColor(.white)
-                        .font(.system(size: 20))
-                }
+                Image(systemName: "square.and.arrow.up")
+                    .foregroundColor(.white)
+                    .font(.system(size: 20))
+                    .contentShape(Rectangle().size(width: 44, height: 44))
+                    .highPriorityGesture(TapGesture().onEnded {
+                        showShareSheet = true
+                    })
             }
 
             // Progress Section
