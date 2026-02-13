@@ -20,6 +20,8 @@ struct ProfilePopupView: View {
     @State private var editingUsername = false
     @State private var usernameText = ""
     @State private var showSaveSuccess = false
+    @State private var showDeleteConfirmation = false
+    @State private var deleteError: String?
 
     var body: some View {
         ZStack {
@@ -217,7 +219,52 @@ struct ProfilePopupView: View {
                     .shadow(color: Color(hex: "E91E63").opacity(0.3), radius: 8, x: 0, y: 4)
                 }
                 .padding(.horizontal, 24)
+                .padding(.bottom, 12)
+
+                // Delete Account button
+                Button(action: {
+                    showDeleteConfirmation = true
+                }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "trash.fill")
+                            .font(.system(size: 18, weight: .semibold))
+
+                        Text("Delete Account")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                    }
+                    .foregroundColor(Color(hex: "E91E63"))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(Color(hex: "E91E63").opacity(0.1))
+                    .cornerRadius(16)
+                }
+                .padding(.horizontal, 24)
                 .padding(.bottom, 24)
+                .alert("Delete Account", isPresented: $showDeleteConfirmation) {
+                    Button("Cancel", role: .cancel) {}
+                    Button("Delete", role: .destructive) {
+                        Task {
+                            do {
+                                try await authManager.deleteAccount()
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                    isPresented = false
+                                }
+                            } catch {
+                                deleteError = error.localizedDescription
+                            }
+                        }
+                    }
+                } message: {
+                    Text("Are you sure? This will permanently delete your account and all associated data. This cannot be undone.")
+                }
+                .alert("Error", isPresented: Binding(
+                    get: { deleteError != nil },
+                    set: { if !$0 { deleteError = nil } }
+                )) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(deleteError ?? "")
+                }
             }
             .background(Color.white)
             .cornerRadius(24)

@@ -84,6 +84,14 @@ class AuthManager: ObservableObject {
         saveSession(token: response.accessToken, refreshToken: response.refreshToken, user: response.user)
     }
 
+    func deleteAccount() async throws {
+        isLoading = true
+        defer { isLoading = false }
+        guard let token = accessToken else { return }
+        try await AuthService.shared.deleteAccount(token: token)
+        clearSession()
+    }
+
     func logout() async {
         isLoading = true
         defer { isLoading = false }

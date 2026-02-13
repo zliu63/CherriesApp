@@ -96,6 +96,21 @@ class AuthService {
         }
     }
 
+    func deleteAccount(token: String) async throws {
+        let url = URL(string: "\(baseURL)/auth/account")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 204 else {
+            throw APIError.unknown
+        }
+    }
+
     func refreshToken(refreshToken: String) async throws -> AuthResponse {
         let url = URL(string: "\(baseURL)/auth/refresh")!
 
